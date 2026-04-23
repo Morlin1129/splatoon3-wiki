@@ -1,0 +1,13 @@
+stages:
+  ingest:
+    provider: gemini
+    model: gemini-2.5-flash
+    max_tokens: 4096
+  classify:
+    provider: gemini
+    model: gemini-2.5-flash
+    max_tokens: 512
+  compile:
+    provider: anthropic
+    model: claude-sonnet-4-6
+    max_tokens: 8192
