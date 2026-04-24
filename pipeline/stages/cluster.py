@@ -12,7 +12,8 @@ def run(*, classified_dir: Path, clusters_path: Path) -> None:
 
     for path in sorted(classified_dir.rglob("*.md")):
         fm, _ = read_frontmatter(path, ClassifiedFrontmatter)
-        assert fm is not None
+        if fm is None:
+            raise RuntimeError(f"unreachable: classified missing frontmatter: {path}")
         key = f"{fm.category}/{fm.subtopic}"
         rel = str(path.relative_to(classified_dir.parent))
         clusters.setdefault(key, []).append(rel)

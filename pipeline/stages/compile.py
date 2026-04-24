@@ -27,7 +27,8 @@ def _load_snippets(root: Path, paths: list[str]) -> tuple[list[str], set[str]]:
     source_files: set[str] = set()
     for rel in paths:
         fm, body = read_frontmatter(root / rel, ClassifiedFrontmatter)
-        assert fm is not None
+        if fm is None:
+            raise RuntimeError(f"unreachable: classified missing frontmatter: {rel}")
         bodies.append(body.strip())
         source_files.add(fm.source_file)
     return bodies, source_files

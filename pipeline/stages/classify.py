@@ -54,7 +54,8 @@ def run(
             continue
 
         fm, body = read_frontmatter(snippet_path, SnippetFrontmatter)
-        assert fm is not None
+        if fm is None:
+            raise RuntimeError(f"unreachable: snippet missing frontmatter: {snippet_path}")
 
         user = _build_user_prompt(categories, body, known_subtopics)
         reply = provider.complete(
