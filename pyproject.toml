@@ -28,3 +28,6 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "RUF"]
+# Japanese content uses characters like "×" (U+00D7) and "ー" that ruff flags
+# as ambiguous. Disable RUF001/002/003 project-wide.
+ignore = ["RUF001", "RUF002", "RUF003"]

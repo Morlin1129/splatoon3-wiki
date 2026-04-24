@@ -57,11 +57,7 @@ def test_load_pipeline(tmp_path: Path) -> None:
 def test_load_pipeline_rejects_unknown_provider(tmp_path: Path) -> None:
     yaml_path = tmp_path / "pipeline.yaml"
     yaml_path.write_text(
-        "stages:\n"
-        "  ingest:\n"
-        "    provider: bogus\n"
-        "    model: x\n"
-        "    max_tokens: 1\n",
+        "stages:\n  ingest:\n    provider: bogus\n    model: x\n    max_tokens: 1\n",
         encoding="utf-8",
     )
 
