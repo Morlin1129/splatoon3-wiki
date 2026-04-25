@@ -1,0 +1,34 @@
+{
+  "01-principles/enemy-respawn-prediction": [
+    "classified/01-principles/2026-04-05-enemy-respawn-tracking.md"
+  ],
+  "01-principles/engagement-mode-switching": [
+    "classified/01-principles/2026-04-05-switching-combat-modes.md",
+    "classified/01-principles/2026-04-21-fluid-roles-concept.md"
+  ],
+  "01-principles/peeking-and-clearing": [
+    "classified/01-principles/2026-04-05-using-cover-and-angles.md"
+  ],
+  "01-principles/dakai-fundamentals": [
+    "classified/01-principles/2026-04-21-dakai-principles-and-routes.md",
+    "classified/01-principles/2026-04-21-dakai-support-role.md"
+  ],
+  "02-rule-stage/2026-04-05-amabi-right-high-suppression": [
+    "classified/02-rule-stage/2026-04-05-amabi-right-high-suppression.md"
+  ],
+  "03-weapon-role/2026-04-05-booyah-bomb-placement-strategy": [
+    "classified/03-weapon-role/2026-04-05-booyah-bomb-placement-strategy.md"
+  ],
+  "03-weapon-role/splash-shield-usage": [
+    "classified/03-weapon-role/2026-04-05-splash-shield-directional-cover.md"
+  ],
+  "03-weapon-role/tactics-cooler-usage": [
+    "classified/03-weapon-role/2026-04-05-tacticooler-positioning-and-gear.md"
+  ],
+  "03-weapon-role/skirmisher-role-theory": [
+    "classified/03-weapon-role/2026-04-21-role-skirmisher-definition.md"
+  ],
+  "03-weapon-role/slayer-role-theory": [
+    "classified/03-weapon-role/2026-04-21-role-slayer-definition.md"
+  ]
+}

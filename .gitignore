@@ -24,5 +24,11 @@ htmlcov/
 .idea/
 .DS_Store
 
+# Claude Code machine-local settings (shared settings.json would still be tracked)
+.claude/settings.local.json
+
 # Raw data cache (Drive-derived, never committed)
 raw_cache/
+
+# Pipeline debug dumps (latest LLM responses for troubleshooting)
+state/debug/

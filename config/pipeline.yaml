@@ -1,0 +1,15 @@
+stages:
+  ingest:
+    provider: gemini
+    model: gemini-3-flash-preview
+    # Japanese prose costs more tokens than English; raise the cap so the
+    # model can finish a multi-snippet JSON array without truncation.
+    max_tokens: 16384
+  classify:
+    provider: gemini
+    model: gemini-3-flash-preview
+    max_tokens: 2048
+  compile:
+    provider: gemini
+    model: gemini-3-flash-preview
+    max_tokens: 8192
