@@ -5,10 +5,10 @@ from pathlib import Path
 
 from pipeline.config import load_categories, load_pipeline
 from pipeline.llm.base import get_provider
-from pipeline.stages import classify, cluster, diff_commit, ingest
+from pipeline.stages import classify, cluster, diff_commit, index, ingest
 from pipeline.stages import compile as compile_stage
 
-STAGE_NAMES = ["ingest", "classify", "cluster", "compile", "diff"]
+STAGE_NAMES = ["ingest", "classify", "cluster", "compile", "index", "diff"]
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -65,6 +65,11 @@ def _run_stage(name: str, root: Path) -> None:
             prompt_path=root / "pipeline" / "prompts" / "compile.md",
             source_urls={},
             root=root,
+        )
+    elif name == "index":
+        index.run(
+            wiki_dir=root / "wiki",
+            categories=categories,
         )
     elif name == "diff":
         diff_commit.run(repo_root=root, wiki_dir=root / "wiki")
