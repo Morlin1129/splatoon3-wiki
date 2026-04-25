@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 from collections.abc import Callable
 from datetime import UTC, datetime
@@ -10,6 +9,7 @@ from pathlib import Path
 from pipeline.config import StageConfig
 from pipeline.frontmatter_io import write_frontmatter
 from pipeline.llm.base import LLMProvider
+from pipeline.llm.parsing import parse_json_response
 from pipeline.models import SnippetFrontmatter
 from pipeline.slug import slugify
 from pipeline.state import Manifest
@@ -28,8 +28,8 @@ def _hash_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _parse_llm_response(text: str) -> list[dict]:
-    data = json.loads(text)
+def _parse_llm_response(text: str, *, debug_dir: Path | None) -> list[dict]:
+    data = parse_json_response(text, stage="ingest", debug_dir=debug_dir)
     if not isinstance(data, list):
         raise ValueError("ingest LLM response must be a JSON array")
     return data
@@ -49,6 +49,7 @@ def run(
     root = root or raw_dir.parent
     manifest = Manifest.load(manifest_path)
     system_prompt = prompt_path.read_text(encoding="utf-8")
+    debug_dir = root / "state" / "debug"
 
     for raw_file in sorted(raw_dir.glob("*.md")):
         rel = str(raw_file.relative_to(root))
@@ -66,7 +67,7 @@ def run(
             max_tokens=stage_cfg.max_tokens,
             response_format="json",
         )
-        items = _parse_llm_response(reply)
+        items = _parse_llm_response(reply, debug_dir=debug_dir)
         src_date = _source_date(raw_file)
         extracted_at = now()
 

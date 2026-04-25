@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import yaml
@@ -8,6 +7,7 @@ import yaml
 from pipeline.config import Category, StageConfig
 from pipeline.frontmatter_io import read_frontmatter, write_frontmatter
 from pipeline.llm.base import LLMProvider
+from pipeline.llm.parsing import parse_json_response
 from pipeline.models import ClassifiedFrontmatter, SnippetFrontmatter
 from pipeline.state import Manifest
 
@@ -42,6 +42,7 @@ def run(
     manifest = Manifest.load(manifest_path)
     system_prompt = prompt_path.read_text(encoding="utf-8")
     valid_ids = {c.id for c in categories}
+    debug_dir = root / "state" / "debug"
 
     known_subtopics = [
         p.stem for cat_dir in classified_dir.glob("*/") for p in cat_dir.glob("*.md")
@@ -65,7 +66,7 @@ def run(
             max_tokens=stage_cfg.max_tokens,
             response_format="json",
         )
-        parsed = json.loads(reply)
+        parsed = parse_json_response(reply, stage="classify", debug_dir=debug_dir)
         category_id = parsed["category"]
         subtopic = parsed["subtopic"]
         if category_id not in valid_ids:

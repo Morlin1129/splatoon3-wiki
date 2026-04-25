@@ -26,3 +26,6 @@ htmlcov/
 
 # Raw data cache (Drive-derived, never committed)
 raw_cache/
+
+# Pipeline debug dumps (latest LLM responses for troubleshooting)
+state/debug/
