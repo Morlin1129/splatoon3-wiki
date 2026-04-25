@@ -22,3 +22,8 @@ def test_parse_args_requires_one(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_parse_args_rejects_unknown_stage() -> None:
     with pytest.raises(SystemExit):
         main.parse_args(["--stage", "bogus"])
+
+
+def test_parse_args_accepts_index_stage() -> None:
+    args = main.parse_args(["--stage", "index"])
+    assert args.stage == "index"
