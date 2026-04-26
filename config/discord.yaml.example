@@ -1,0 +1,14 @@
+# Copy to config/discord.yaml and fill in real IDs.
+# Server / channel IDs MUST be quoted strings (Discord snowflakes are 64-bit).
+
+output_dir: raw_cache/discord
+timezone: Asia/Tokyo
+
+servers:
+  - id: "123456789012345678"
+    name: "Splatoon道場"
+    channels:
+      - id: "234567890123456789"
+        name: "戦術談義"
+      - id: "234567890123456790"
+        name: "海女美術"
