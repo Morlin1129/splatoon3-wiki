@@ -32,3 +32,6 @@ raw_cache/
 
 # Pipeline debug dumps (latest LLM responses for troubleshooting)
 state/debug/
+
+# Local git worktrees (used during isolated feature work)
+.worktrees/
