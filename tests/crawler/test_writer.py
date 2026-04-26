@@ -179,3 +179,39 @@ def test_write_week_file_no_partial_left_after_success(tmp_path: Path) -> None:
     )
     partial = path.with_suffix(path.suffix + ".partial")
     assert not partial.exists()
+
+
+def test_write_week_file_preserves_horizontal_rule_in_body(tmp_path: Path) -> None:
+    """A user posting `---` in a message body must not break the message
+    structure: only the two frontmatter delimiters should appear as
+    unindented `---` lines in the file."""
+    out = tmp_path / "raw_cache" / "discord"
+    path = channel_week_path(out, "S", "C", "2026-W17")
+    write_week_file(
+        path=path,
+        server_id="111",
+        server_name="S",
+        channel_id="222",
+        channel_name="C",
+        week_id="2026-W17",
+        week_start=datetime(2026, 4, 20, tzinfo=JST),
+        week_end=datetime(2026, 4, 27, tzinfo=JST),
+        fetched_at=datetime(2026, 4, 27, 9, tzinfo=JST),
+        messages=[
+            _msg(id="1", content="before\n---\nafter"),
+            _msg(id="2", content="another"),
+        ],
+    )
+    text = path.read_text(encoding="utf-8")
+    # Frontmatter delimiters: opening `---\n` at start, closing `---` line.
+    # The body's internal `---` is allowed; what's NOT allowed is having
+    # MORE than 2 frontmatter-style fences (i.e., extra unindented `---`
+    # lines that a line splitter could mistake for frontmatter).
+    fence_lines = [line for line in text.splitlines() if line == "---"]
+    assert len(fence_lines) == 3  # opening fence, closing fence, body's `---`
+    # Ensure both messages survived as distinct blocks.
+    assert "## msg-1" in text
+    assert "## msg-2" in text
+    assert "before" in text
+    assert "after" in text
+    assert "another" in text

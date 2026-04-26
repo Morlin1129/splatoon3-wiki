@@ -104,7 +104,7 @@ def write_week_file(
         sort_keys=False,
     )
     blocks = [format_message_block(m) for m in messages]
-    body = "\n\n---\n\n".join(blocks)
+    body = "\n\n".join(blocks)
     content = f"---\n{fm_yaml}---\n\n{body}\n" if blocks else f"---\n{fm_yaml}---\n"
 
     partial = path.with_suffix(path.suffix + ".partial")
