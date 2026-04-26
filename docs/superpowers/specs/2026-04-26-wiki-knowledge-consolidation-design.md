@@ -181,8 +181,11 @@ JSON のみ:
 
 ```markdown
 ---
+title: "統合済み: 2026-04-26-general-dakai-home-base-clearing"
 category: 01-principles
 subtopic: 2026-04-26-general-dakai-home-base-clearing
+sources: []
+updated_at: 2026-04-26T14:32:00+00:00
 tombstone: true
 merged_into: dakai-fundamentals
 merged_at: 2026-04-26T14:32:00+00:00
@@ -204,13 +207,14 @@ merged_at: 2026-04-26T14:32:00+00:00
 
 ### 6.4 wiki frontmatter モデルの拡張
 
-[pipeline/models.py](../../../pipeline/models.py) の `WikiFrontmatter` に optional フィールドを追加:
+[pipeline/models.py](../../../pipeline/models.py) の `WikiFrontmatter` に optional フィールドを追加（既存の `title` フィールドは維持）:
 
 ```python
 class WikiFrontmatter(BaseModel):
-    category: str
-    subtopic: str
-    sources: list[str] = []
+    title: str = Field(min_length=1)
+    category: str = Field(min_length=1)
+    subtopic: str = Field(min_length=1)
+    sources: list[str] = Field(default_factory=list)
     updated_at: datetime
     tombstone: bool = False
     merged_into: str | None = None
@@ -218,6 +222,8 @@ class WikiFrontmatter(BaseModel):
 ```
 
 通常の wiki ページは `tombstone=False` のまま、tombstone ページは `tombstone=True` + 関連フィールドが入る。
+
+tombstone ページの `title` は consolidate stage が `"統合済み: <旧 subtopic>"` 形式で構築する（LLM 不使用）。
 
 ### 6.5 index stage の修正
 
