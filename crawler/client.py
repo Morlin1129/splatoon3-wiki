@@ -90,7 +90,19 @@ class DiscordClient:
 
     async def __aenter__(self) -> DiscordClient:
         self._login_task = asyncio.create_task(self._client.start(self._token))
-        await self._client.wait_until_ready()
+        ready_task = asyncio.create_task(self._client.wait_until_ready())
+        done, _ = await asyncio.wait(
+            {self._login_task, ready_task},
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+        if self._login_task in done:
+            # start() returned before wait_until_ready resolved — that means
+            # it raised. Cancel the ready waiter and re-raise the start error.
+            ready_task.cancel()
+            self._login_task.result()
+            # If start() returned None without raising (shouldn't happen with
+            # discord.py), fall through and let __aexit__ tear things down.
+            raise RuntimeError("discord client.start() returned without ready")
         return self
 
     async def __aexit__(self, *args: object) -> None:
@@ -98,8 +110,14 @@ class DiscordClient:
         if self._login_task is not None:
             try:
                 await self._login_task
-            except Exception:
+            except asyncio.CancelledError:
+                # Expected — close() cancels the login task.
                 pass
+            except Exception as e:
+                print(
+                    f"[crawler] WARN discord login task ended with error: {e}",
+                    file=sys.stderr,
+                )
 
     async def _get_channel(self, channel_id: str):
         ch = self._client.get_channel(int(channel_id))
@@ -121,8 +139,12 @@ class DiscordClient:
 
     async def fetch_active_thread_ids(self, channel_id: str) -> list[str]:
         ch = await self._get_channel(channel_id)
-        threads = getattr(ch, "threads", None) or []
-        return [str(t.id) for t in threads]
+        guild = getattr(ch, "guild", None)
+        if guild is None:
+            return []
+        parent_id = ch.id
+        all_active = await guild.active_threads()
+        return [str(t.id) for t in all_active if getattr(t, "parent_id", None) == parent_id]
 
     async def fetch_thread_messages(
         self, thread_id: str, after: datetime, before: datetime
