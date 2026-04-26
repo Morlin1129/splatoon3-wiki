@@ -18,10 +18,6 @@ def workspace(tmp_path: Path) -> Path:
     (tmp_path / "classified" / "02-rule-stage").mkdir(parents=True)
     (tmp_path / "wiki").mkdir()
     (tmp_path / "state").mkdir()
-    (tmp_path / "pipeline" / "prompts").mkdir(parents=True)
-    (tmp_path / "pipeline" / "prompts" / "compile.md").write_text(
-        "COMPILE PROMPT", encoding="utf-8"
-    )
     return tmp_path
 
 
@@ -59,7 +55,17 @@ def test_compile_writes_wiki_page_with_frontmatter_and_sources(workspace: Path) 
     categories = [
         Category(id="02-rule-stage", label="ルール×ステージ", description="定石"),
     ]
-    provider = FakeLLMProvider(responses=["## 海女美術 ガチエリア\n\n本文。"])
+    provider = FakeLLMProvider(
+        responses=[
+            json.dumps(
+                {
+                    "title": "海女美術 ガチエリアの右高台運用",
+                    "body": "## 海女美術 ガチエリア\n\n本文。",
+                },
+                ensure_ascii=False,
+            )
+        ]
+    )
     stage_cfg = StageConfig(provider="fake", model="x", max_tokens=8192)
 
     compile_stage.run(
@@ -70,7 +76,7 @@ def test_compile_writes_wiki_page_with_frontmatter_and_sources(workspace: Path) 
         wiki_dir=workspace / "wiki",
         clusters_path=clusters_path,
         manifest_path=manifest_path,
-        prompt_path=workspace / "pipeline" / "prompts" / "compile.md",
+        system_prompt="COMPILE PROMPT",
         source_urls={"sample_raw/a.md": "https://drive.google.com/file/d/AAA"},
         now=lambda: datetime(2026, 4, 24, 12, 0, 0),
         root=workspace,
@@ -79,6 +85,7 @@ def test_compile_writes_wiki_page_with_frontmatter_and_sources(workspace: Path) 
     out = workspace / "wiki" / "02-rule-stage" / "海女美術-ガチエリア.md"
     assert out.exists()
     fm, body = read_frontmatter(out, WikiFrontmatter)
+    assert fm.title == "海女美術 ガチエリアの右高台運用"
     assert fm.category == "02-rule-stage"
     assert fm.subtopic == "海女美術-ガチエリア"
     assert fm.sources == ["https://drive.google.com/file/d/AAA"]
@@ -116,7 +123,7 @@ def test_compile_skips_unchanged_cluster(workspace: Path) -> None:
         wiki_dir=workspace / "wiki",
         clusters_path=clusters_path,
         manifest_path=manifest_path,
-        prompt_path=workspace / "pipeline" / "prompts" / "compile.md",
+        system_prompt="COMPILE PROMPT",
         source_urls={},
         now=lambda: datetime(2026, 4, 24, 12, 0, 0),
         root=workspace,

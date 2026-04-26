@@ -17,10 +17,6 @@ def workspace(tmp_path: Path) -> Path:
     (tmp_path / "snippets").mkdir()
     (tmp_path / "classified").mkdir()
     (tmp_path / "state").mkdir()
-    (tmp_path / "pipeline" / "prompts").mkdir(parents=True)
-    (tmp_path / "pipeline" / "prompts" / "classify.md").write_text(
-        "CLASSIFY PROMPT", encoding="utf-8"
-    )
     return tmp_path
 
 
@@ -66,7 +62,7 @@ def test_classify_moves_snippet_to_classified_dir(workspace: Path) -> None:
         snippets_dir=workspace / "snippets",
         classified_dir=workspace / "classified",
         manifest_path=manifest_path,
-        prompt_path=workspace / "pipeline" / "prompts" / "classify.md",
+        system_prompt="CLASSIFY PROMPT",
         root=workspace,
     )
 
@@ -102,7 +98,7 @@ def test_classify_skips_already_classified(workspace: Path) -> None:
         snippets_dir=workspace / "snippets",
         classified_dir=workspace / "classified",
         manifest_path=manifest_path,
-        prompt_path=workspace / "pipeline" / "prompts" / "classify.md",
+        system_prompt="CLASSIFY PROMPT",
         root=workspace,
     )
 

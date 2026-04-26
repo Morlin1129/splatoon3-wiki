@@ -44,9 +44,10 @@ def parse_json_response(
         debug_dir.mkdir(parents=True, exist_ok=True)
         (debug_dir / f"{stage}.txt").write_text(raw, encoding="utf-8")
 
-    cleaned = strip_markdown_fence(raw)
+    cleaned = strip_markdown_fence(raw).lstrip()
     try:
-        return json.loads(cleaned)
+        obj, _ = json.JSONDecoder().raw_decode(cleaned)
+        return obj
     except json.JSONDecodeError as exc:
         snippet = raw[:200].replace("\n", "\\n")
         raise ValueError(

@@ -31,3 +31,17 @@ def load_categories(path: Path) -> list[Category]:
 def load_pipeline(path: Path) -> PipelineConfig:
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
     return PipelineConfig.model_validate(data)
+
+
+def build_system_prompt(root: Path, stage_name: str) -> str:
+    """Compose system prompt: shared domain + stage domain + pipeline rules."""
+    parts: list[str] = []
+    for candidate in (
+        root / "config" / "domain.md",
+        root / "config" / "domain" / f"{stage_name}.md",
+    ):
+        if candidate.exists():
+            parts.append(candidate.read_text(encoding="utf-8").strip())
+    rules = root / "pipeline" / "prompts" / f"{stage_name}.md"
+    parts.append(rules.read_text(encoding="utf-8").strip())
+    return "\n\n---\n\n".join(parts) + "\n"

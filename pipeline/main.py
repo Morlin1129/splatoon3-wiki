@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from pipeline.config import load_categories, load_pipeline
+from pipeline.config import build_system_prompt, load_categories, load_pipeline
 from pipeline.llm.base import get_provider
 from pipeline.stages import classify, cluster, diff_commit, index, ingest
 from pipeline.stages import compile as compile_stage
@@ -32,7 +32,7 @@ def _run_stage(name: str, root: Path) -> None:
             raw_dir=root / "sample_raw",
             snippets_dir=root / "snippets",
             manifest_path=root / "state" / "ingest_manifest.json",
-            prompt_path=root / "pipeline" / "prompts" / "ingest.md",
+            system_prompt=build_system_prompt(root, "ingest"),
             root=root,
         )
     elif name == "classify":
@@ -44,7 +44,7 @@ def _run_stage(name: str, root: Path) -> None:
             snippets_dir=root / "snippets",
             classified_dir=root / "classified",
             manifest_path=root / "state" / "ingest_manifest.json",
-            prompt_path=root / "pipeline" / "prompts" / "classify.md",
+            system_prompt=build_system_prompt(root, "classify"),
             root=root,
         )
     elif name == "cluster":
@@ -62,7 +62,7 @@ def _run_stage(name: str, root: Path) -> None:
             wiki_dir=root / "wiki",
             clusters_path=root / "state" / "clusters.json",
             manifest_path=root / "state" / "ingest_manifest.json",
-            prompt_path=root / "pipeline" / "prompts" / "compile.md",
+            system_prompt=build_system_prompt(root, "compile"),
             source_urls={},
             root=root,
         )

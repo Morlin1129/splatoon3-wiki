@@ -17,8 +17,6 @@ def workspace(tmp_path: Path) -> Path:
     (tmp_path / "sample_raw").mkdir()
     (tmp_path / "snippets").mkdir()
     (tmp_path / "state").mkdir()
-    (tmp_path / "pipeline" / "prompts").mkdir(parents=True)
-    (tmp_path / "pipeline" / "prompts" / "ingest.md").write_text("INGEST PROMPT", encoding="utf-8")
     return tmp_path
 
 
@@ -42,7 +40,7 @@ def test_ingest_creates_snippet_files(workspace: Path) -> None:
         raw_dir=workspace / "sample_raw",
         snippets_dir=workspace / "snippets",
         manifest_path=workspace / "state" / "ingest_manifest.json",
-        prompt_path=workspace / "pipeline" / "prompts" / "ingest.md",
+        system_prompt="INGEST PROMPT",
         now=lambda: datetime(2026, 4, 24, 12, 0, 0),
     )
 
@@ -76,7 +74,7 @@ def test_ingest_skips_unchanged_raw(workspace: Path) -> None:
         raw_dir=workspace / "sample_raw",
         snippets_dir=workspace / "snippets",
         manifest_path=manifest_path,
-        prompt_path=workspace / "pipeline" / "prompts" / "ingest.md",
+        system_prompt="INGEST PROMPT",
         now=lambda: datetime(2026, 4, 24, 12, 0, 0),
         root=workspace,
     )

@@ -17,19 +17,8 @@ def _init_repo(root: Path) -> None:
 
 def test_pipeline_end_to_end_with_fake_llm(tmp_path: Path) -> None:
     root = tmp_path
-    for sub in [
-        "sample_raw",
-        "snippets",
-        "classified",
-        "wiki",
-        "state",
-        "pipeline/prompts",
-    ]:
+    for sub in ["sample_raw", "snippets", "classified", "wiki", "state"]:
         (root / sub).mkdir(parents=True, exist_ok=True)
-
-    (root / "pipeline" / "prompts" / "ingest.md").write_text("INGEST", encoding="utf-8")
-    (root / "pipeline" / "prompts" / "classify.md").write_text("CLASSIFY", encoding="utf-8")
-    (root / "pipeline" / "prompts" / "compile.md").write_text("COMPILE", encoding="utf-8")
 
     (root / "sample_raw" / "2026-04-01-notes.md").write_text("右高台の話など。", encoding="utf-8")
     _init_repo(root)
@@ -59,7 +48,7 @@ def test_pipeline_end_to_end_with_fake_llm(tmp_path: Path) -> None:
         raw_dir=root / "sample_raw",
         snippets_dir=root / "snippets",
         manifest_path=root / "state" / "ingest_manifest.json",
-        prompt_path=root / "pipeline" / "prompts" / "ingest.md",
+        system_prompt="INGEST",
         now=lambda: datetime(2026, 4, 24, 12, 0, 0),
         root=root,
     )
@@ -74,7 +63,7 @@ def test_pipeline_end_to_end_with_fake_llm(tmp_path: Path) -> None:
         snippets_dir=root / "snippets",
         classified_dir=root / "classified",
         manifest_path=root / "state" / "ingest_manifest.json",
-        prompt_path=root / "pipeline" / "prompts" / "classify.md",
+        system_prompt="CLASSIFY",
         root=root,
     )
 
@@ -83,7 +72,17 @@ def test_pipeline_end_to_end_with_fake_llm(tmp_path: Path) -> None:
         clusters_path=root / "state" / "clusters.json",
     )
 
-    compile_provider = FakeLLMProvider(responses=["## 海女美術 ガチエリア\n\n本文。"])
+    compile_provider = FakeLLMProvider(
+        responses=[
+            json.dumps(
+                {
+                    "title": "海女美術 ガチエリアの右高台運用",
+                    "body": "## 海女美術 ガチエリア\n\n本文。",
+                },
+                ensure_ascii=False,
+            )
+        ]
+    )
     compile_stage.run(
         provider=compile_provider,
         stage_cfg=StageConfig(provider="fake", model="x", max_tokens=8192),
@@ -92,7 +91,7 @@ def test_pipeline_end_to_end_with_fake_llm(tmp_path: Path) -> None:
         wiki_dir=root / "wiki",
         clusters_path=root / "state" / "clusters.json",
         manifest_path=root / "state" / "ingest_manifest.json",
-        prompt_path=root / "pipeline" / "prompts" / "compile.md",
+        system_prompt="COMPILE",
         source_urls={},
         now=lambda: datetime(2026, 4, 24, 12, 0, 0),
         root=root,

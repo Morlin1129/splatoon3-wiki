@@ -7,27 +7,7 @@ from pipeline.config import Category
 from pipeline.frontmatter_io import write_frontmatter
 from pipeline.models import WikiFrontmatter
 from pipeline.stages import index as index_stage
-from pipeline.stages.index import _extract_summary, _extract_title
-
-
-def test_extract_title_uses_first_h2() -> None:
-    body = "## 海女美術 右高台\n\n本文。\n\n## セクション\n"
-    assert _extract_title(body, fallback="slug") == "海女美術 右高台"
-
-
-def test_extract_title_falls_back_to_h1_when_no_h2() -> None:
-    body = "# Top\n\n本文。\n"
-    assert _extract_title(body, fallback="slug") == "Top"
-
-
-def test_extract_title_falls_back_to_slug_when_no_heading() -> None:
-    body = "本文だけ。\n"
-    assert _extract_title(body, fallback="my-subtopic") == "my-subtopic"
-
-
-def test_extract_title_strips_trailing_whitespace() -> None:
-    body = "##   海女美術  \n"
-    assert _extract_title(body, fallback="x") == "海女美術"
+from pipeline.stages.index import _extract_summary
 
 
 def test_extract_summary_takes_first_sentence_after_title() -> None:
@@ -63,8 +43,9 @@ def test_extract_summary_works_without_heading() -> None:
     assert _extract_summary(body) == "見出しなしの段落。"
 
 
-def _write_wiki(path: Path, subtopic: str, body: str) -> None:
+def _write_wiki(path: Path, *, title: str, subtopic: str, body: str) -> None:
     fm = WikiFrontmatter(
+        title=title,
         category=path.parent.name,
         subtopic=subtopic,
         sources=[],
@@ -82,6 +63,26 @@ def categories() -> list[Category]:
     ]
 
 
+def test_index_uses_frontmatter_title_not_body_heading(
+    tmp_path: Path, categories: list[Category]
+) -> None:
+    wiki_dir = tmp_path / "wiki"
+    (wiki_dir / "01-principles").mkdir(parents=True)
+
+    _write_wiki(
+        wiki_dir / "01-principles" / "page.md",
+        title="人数不利時の退避方針",
+        subtopic="two-down-retreat",
+        body="## 別の見出し\n\n本文。\n",
+    )
+
+    index_stage.run(wiki_dir=wiki_dir, categories=categories)
+
+    cat1 = (wiki_dir / "01-principles" / "README.md").read_text(encoding="utf-8")
+    assert "[人数不利時の退避方針](page.md)" in cat1
+    assert "別の見出し" not in cat1
+
+
 def test_index_writes_top_level_and_per_category(
     tmp_path: Path, categories: list[Category]
 ) -> None:
@@ -92,18 +93,21 @@ def test_index_writes_top_level_and_per_category(
 
     _write_wiki(
         wiki_dir / "01-principles" / "two-down-retreat.md",
-        "two-down-retreat",
-        "## 2 落ち時の退避\n\n人数不利時はオブジェクト関与より復帰を優先する。\n",
+        title="2 落ち時の退避",
+        subtopic="two-down-retreat",
+        body="## 2 落ち時の退避\n\n人数不利時はオブジェクト関与より復帰を優先する。\n",
     )
     _write_wiki(
         wiki_dir / "01-principles" / "hate-management.md",
-        "hate-management",
-        "## ヘイト管理\n\n誰が敵の視線を集めるか役割分担する。\n",
+        title="ヘイト管理",
+        subtopic="hate-management",
+        body="## ヘイト管理\n\n誰が敵の視線を集めるか役割分担する。\n",
     )
     _write_wiki(
         wiki_dir / "02-rule-stage" / "amabi-right-high.md",
-        "amabi-right-high",
-        "## 海女美術 右高台\n\n右高台はリスクと裏取り誘発を伴う。\n",
+        title="海女美術 右高台",
+        subtopic="amabi-right-high",
+        body="## 海女美術 右高台\n\n右高台はリスクと裏取り誘発を伴う。\n",
     )
 
     index_stage.run(wiki_dir=wiki_dir, categories=categories)
@@ -137,8 +141,9 @@ def test_index_skips_existing_readme_when_counting_and_listing(
 
     _write_wiki(
         cat_dir / "page-one.md",
-        "page-one",
-        "## ページ1\n\n本文。\n",
+        title="ページ1",
+        subtopic="page-one",
+        body="## ページ1\n\n本文。\n",
     )
     (cat_dir / "README.md").write_text("# stale", encoding="utf-8")
 
@@ -157,8 +162,9 @@ def test_index_is_idempotent(tmp_path: Path, categories: list[Category]) -> None
     (wiki_dir / "01-principles").mkdir(parents=True)
     _write_wiki(
         wiki_dir / "01-principles" / "p.md",
-        "p",
-        "## P\n\n本文。\n",
+        title="P",
+        subtopic="p",
+        body="## P\n\n本文。\n",
     )
 
     index_stage.run(wiki_dir=wiki_dir, categories=categories)

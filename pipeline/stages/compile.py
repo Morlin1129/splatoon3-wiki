@@ -9,6 +9,7 @@ from pathlib import Path
 from pipeline.config import Category, StageConfig
 from pipeline.frontmatter_io import read_frontmatter, write_frontmatter
 from pipeline.llm.base import LLMProvider
+from pipeline.llm.parsing import parse_json_response
 from pipeline.models import ClassifiedFrontmatter, WikiFrontmatter
 from pipeline.state import Manifest
 
@@ -36,7 +37,7 @@ def _load_snippets(root: Path, paths: list[str]) -> tuple[list[str], set[str]]:
 
 def _build_user_prompt(category_label: str, subtopic: str, bodies: list[str]) -> str:
     numbered = "\n\n".join(f"{i + 1}. {b}" for i, b in enumerate(bodies))
-    return f"Category: {category_label}\nSubtopic: {subtopic}\n\nSnippets:\n{numbered}"
+    return f"カテゴリー: {category_label}\nサブトピック: {subtopic}\n\nスニペット:\n{numbered}"
 
 
 def _with_sources(body: str, sources: list[str]) -> str:
@@ -58,7 +59,7 @@ def run(
     wiki_dir: Path,
     clusters_path: Path,
     manifest_path: Path,
-    prompt_path: Path,
+    system_prompt: str,
     source_urls: dict[str, str],
     now: Callable[[], datetime] = _now_utc,
     root: Path | None = None,
@@ -66,8 +67,8 @@ def run(
     root = root or classified_dir.parent
     clusters = json.loads(clusters_path.read_text(encoding="utf-8"))
     manifest = Manifest.load(manifest_path)
-    system_prompt = prompt_path.read_text(encoding="utf-8")
     label_by_id = {c.id: c.label for c in categories}
+    debug_dir = root / "state" / "debug"
 
     for key, paths in clusters.items():
         category_id, subtopic = key.split("/", 1)
@@ -84,13 +85,18 @@ def run(
             user=_build_user_prompt(label_by_id[category_id], subtopic, bodies),
             model=stage_cfg.model,
             max_tokens=stage_cfg.max_tokens,
+            response_format="json",
         )
+        parsed = parse_json_response(reply, stage="compile", debug_dir=debug_dir)
+        title = parsed["title"]
+        body = parsed["body"]
 
         sources = sorted(source_urls[s] for s in source_files if s in source_urls)
-        final_body = _with_sources(reply, sources)
+        final_body = _with_sources(body, sources)
         updated_at = now()
 
         fm = WikiFrontmatter(
+            title=title,
             category=category_id,
             subtopic=subtopic,
             sources=sources,

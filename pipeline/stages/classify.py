@@ -20,11 +20,11 @@ def _build_user_prompt(
         allow_unicode=True,
         sort_keys=False,
     )
-    known = "\n".join(f"- {s}" for s in sorted(set(known_subtopics))) or "(none yet)"
+    known = "\n".join(f"- {s}" for s in sorted(set(known_subtopics))) or "(まだなし)"
     return (
         f"{cat_yaml}\n\n"
-        f"Existing subtopics (reuse when appropriate):\n{known}\n\n"
-        f"Snippet body:\n---\n{snippet_body}\n---"
+        f"既存のサブトピック（適切な場合は再利用してください）:\n{known}\n\n"
+        f"スニペット本文:\n---\n{snippet_body}\n---"
     )
 
 
@@ -36,11 +36,10 @@ def run(
     snippets_dir: Path,
     classified_dir: Path,
     manifest_path: Path,
-    prompt_path: Path,
+    system_prompt: str,
     root: Path,
 ) -> None:
     manifest = Manifest.load(manifest_path)
-    system_prompt = prompt_path.read_text(encoding="utf-8")
     valid_ids = {c.id for c in categories}
     debug_dir = root / "state" / "debug"
 

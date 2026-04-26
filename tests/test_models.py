@@ -43,6 +43,7 @@ def test_classified_frontmatter_requires_category_and_subtopic() -> None:
 
 def test_wiki_frontmatter_sources_list() -> None:
     fm = WikiFrontmatter(
+        title="海女美術 ガチエリア定石",
         category="02-rule-stage",
         subtopic="海女美術_ガチエリア",
         sources=[
@@ -53,3 +54,23 @@ def test_wiki_frontmatter_sources_list() -> None:
     )
 
     assert len(fm.sources) == 2
+    assert fm.title == "海女美術 ガチエリア定石"
+
+
+def test_wiki_frontmatter_requires_non_empty_title() -> None:
+    with pytest.raises(ValidationError):
+        WikiFrontmatter(
+            title="",
+            category="02-rule-stage",
+            subtopic="海女美術_ガチエリア",
+            sources=[],
+            updated_at=datetime(2026, 4, 24, 12, 0, 0),
+        )
+
+    with pytest.raises(ValidationError):
+        WikiFrontmatter(  # type: ignore[call-arg]
+            category="02-rule-stage",
+            subtopic="海女美術_ガチエリア",
+            sources=[],
+            updated_at=datetime(2026, 4, 24, 12, 0, 0),
+        )
