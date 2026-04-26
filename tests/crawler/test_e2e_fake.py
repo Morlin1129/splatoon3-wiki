@@ -62,6 +62,9 @@ def test_e2e_writes_expected_file(workspace: Path) -> None:
     assert expected.exists()
     text = expected.read_text(encoding="utf-8")
     assert "message_count: 2" in text
+    assert 'server_id: "111"' in text
+    assert 'channel_id: "222"' in text
+    assert "week: 2026-W17" in text or 'week: "2026-W17"' in text
     assert "hello" in text
     assert "world" in text
     assert "## msg-m1" in text
@@ -124,3 +127,56 @@ def test_e2e_missing_config_returns_2(tmp_path: Path, monkeypatch: pytest.Monkey
     monkeypatch.setenv("DISCORD_BOT_TOKEN", "fake")
     rc = cli.main(["--week", "2026-W17"])
     assert rc == 2
+
+
+@pytest.fixture
+def workspace_two_channels(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    (tmp_path / "config").mkdir()
+    (tmp_path / "config" / "discord.yaml").write_text(
+        """
+output_dir: raw_cache/discord
+timezone: Asia/Tokyo
+servers:
+  - id: "111"
+    name: "ServerA"
+    channels:
+      - id: "222"
+        name: "ChannelA"
+      - id: "333"
+        name: "ChannelB"
+""".strip(),
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("DISCORD_BOT_TOKEN", "fake-token")
+    return tmp_path
+
+
+def test_e2e_fetch_failure_returns_1_and_continues(workspace_two_channels: Path) -> None:
+    """If fetch fails for one channel, the loop continues to the next and the
+    overall exit code is 1 (partial failure)."""
+
+    class FlakyClient(FakeDiscordClient):
+        async def fetch_channel_messages(self, channel_id, after, before):
+            if channel_id == "222":
+                raise RuntimeError("simulated fetch failure")
+            async for m in super().fetch_channel_messages(channel_id, after, before):
+                yield m
+
+    client = FlakyClient(
+        channels={
+            "333": FakeChannelData(messages=[_msg("ok1", datetime(2026, 4, 22, tzinfo=JST), "ok")])
+        }
+    )
+    with patch.object(cli, "_make_client", return_value=client):
+        rc = cli.main(["--week", "2026-W17"])
+
+    assert rc == 1  # partial failure
+    # ChannelA file NOT written (fetch failed)
+    cha = workspace_two_channels / "raw_cache" / "discord" / "ServerA" / "ChannelA" / "2026-W17.md"
+    assert not cha.exists()
+    # ChannelB file IS written (fetch succeeded after the loop continued)
+    chb = workspace_two_channels / "raw_cache" / "discord" / "ServerA" / "ChannelB" / "2026-W17.md"
+    assert chb.exists()
+    text = chb.read_text(encoding="utf-8")
+    assert "## msg-ok1" in text
