@@ -74,3 +74,33 @@ def test_wiki_frontmatter_requires_non_empty_title() -> None:
             sources=[],
             updated_at=datetime(2026, 4, 24, 12, 0, 0),
         )
+
+
+def test_wiki_frontmatter_tombstone_defaults_off() -> None:
+    fm = WikiFrontmatter(
+        title="海女美術 ガチエリア定石",
+        category="02-rule-stage",
+        subtopic="amabi-area-fundamentals",
+        sources=[],
+        updated_at=datetime(2026, 4, 24, 12, 0, 0),
+    )
+    assert fm.tombstone is False
+    assert fm.merged_into is None
+    assert fm.merged_at is None
+
+
+def test_wiki_frontmatter_tombstone_carries_merge_metadata() -> None:
+    merged_at = datetime(2026, 4, 26, 14, 32, 0)
+    fm = WikiFrontmatter(
+        title="統合済み: 2026-04-26-general-dakai-home-base-clearing",
+        category="01-principles",
+        subtopic="2026-04-26-general-dakai-home-base-clearing",
+        sources=[],
+        updated_at=merged_at,
+        tombstone=True,
+        merged_into="dakai-fundamentals",
+        merged_at=merged_at,
+    )
+    assert fm.tombstone is True
+    assert fm.merged_into == "dakai-fundamentals"
+    assert fm.merged_at == merged_at
