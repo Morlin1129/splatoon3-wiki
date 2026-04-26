@@ -26,18 +26,8 @@
 
 ## 出力形式
 
-JSON のみ、以下の形式で返す。
-
-```json
-{"renames": [
-  {
-    "category": "<category-id>",
-    "from": "<old-subtopic>",
-    "to": "<new-subtopic>",
-    "reason": "<1 文で統合理由>"
-  }
-]}
-```
+JSON のみ、1 行で、以下の形式で返す:
+`{"renames": [{"category": "<category-id>", "from": "<old-subtopic>", "to": "<new-subtopic>", "reason": "<1 文で統合理由>"}]}`
 
 統合・改名が不要な場合は `{"renames": []}` を返す。
 
