@@ -43,9 +43,12 @@ def run(
     valid_ids = {c.id for c in categories}
     debug_dir = root / "state" / "debug"
 
-    known_subtopics = [
-        p.stem for cat_dir in classified_dir.glob("*/") for p in cat_dir.glob("*.md")
-    ]
+    known_subtopics: list[str] = []
+    for cat_dir in classified_dir.glob("*/"):
+        for path in cat_dir.glob("*.md"):
+            existing_fm, _ = read_frontmatter(path, ClassifiedFrontmatter)
+            if existing_fm is not None:
+                known_subtopics.append(existing_fm.subtopic)
 
     for snippet_path in sorted(snippets_dir.glob("*.md")):
         rel = str(snippet_path.relative_to(root))
