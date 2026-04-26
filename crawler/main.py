@@ -96,19 +96,27 @@ async def run_crawl(
                 failed += 1
                 continue
 
-            wrote = write_week_file(
-                path=path,
-                server_id=server_id,
-                server_name=server_name,
-                channel_id=channel_id,
-                channel_name=channel_name,
-                week_id=week_id,
-                week_start=week_start,
-                week_end=week_end,
-                fetched_at=fetched_at,
-                messages=msgs,
-                force=force,
-            )
+            try:
+                wrote = write_week_file(
+                    path=path,
+                    server_id=server_id,
+                    server_name=server_name,
+                    channel_id=channel_id,
+                    channel_name=channel_name,
+                    week_id=week_id,
+                    week_start=week_start,
+                    week_end=week_end,
+                    fetched_at=fetched_at,
+                    messages=msgs,
+                    force=force,
+                )
+            except OSError as e:
+                print(
+                    f"[crawler] FAIL write {server_name}/{channel_name}: {e}",
+                    file=sys.stderr,
+                )
+                failed += 1
+                break
             if wrote:
                 print(f"[crawler] wrote {len(msgs)} msgs → {path}")
                 written += 1
