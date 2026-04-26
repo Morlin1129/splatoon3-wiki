@@ -25,7 +25,7 @@ cp .env.example .env
 
 ## パイプライン実行
 
-5 ステージ構成：Ingest → Classify → Cluster → Compile → Diff。中間成果物はすべて Markdown。
+6 ステージ構成：Ingest → Classify → Cluster → Compile → Index → Diff。中間成果物はすべて Markdown。
 
 ```bash
 # 単一ステージ
@@ -33,6 +33,7 @@ uv run python -m pipeline.main --stage ingest
 uv run python -m pipeline.main --stage classify
 uv run python -m pipeline.main --stage cluster
 uv run python -m pipeline.main --stage compile
+uv run python -m pipeline.main --stage index
 uv run python -m pipeline.main --stage diff
 
 # 全ステージ一括
@@ -45,7 +46,7 @@ uv run python -m pipeline.main --all
 
 ```
 pipeline/            # パイプライン本体
-  stages/            # Ingest, Classify, Cluster, Compile, Diff
+  stages/            # Ingest, Classify, Cluster, Compile, Index, Diff
   llm/               # Anthropic / Gemini / Fake プロバイダ抽象
   prompts/           # 各ステージのシステムプロンプト
 config/              # categories.yaml (①〜⑤ 固定), pipeline.yaml (stage 設定)
