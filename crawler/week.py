@@ -35,4 +35,5 @@ def parse_week_id(week_id: str) -> tuple[str, datetime, datetime]:
     start_naive = datetime.fromisocalendar(year, week, 1)  # Monday
     start = start_naive.replace(tzinfo=JST)
     end = start + timedelta(days=7)
+    week_id = f"{year}-W{week:02d}"
     return week_id, start, end

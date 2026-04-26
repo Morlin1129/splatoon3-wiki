@@ -27,15 +27,14 @@ def test_handles_monday_start_of_week() -> None:
     assert end == datetime(2026, 4, 27, 0, 0, 0, tzinfo=JST)
 
 
-def test_handles_year_boundary() -> None:
-    # Mon 2026-01-05 09:00 JST → previous week = 2025-W53 (since 2025 has 53 ISO weeks)
-    now = datetime(2026, 1, 5, 9, 0, 0, tzinfo=JST)
+def test_handles_iso_year_boundary() -> None:
+    # 2027-01-04 is Monday JST; prev Monday = 2026-12-28, ISO 2026-W53
+    # (ISO year 2026 has 53 weeks because 2026-01-01 is Thursday).
+    now = datetime(2027, 1, 4, 9, 0, 0, tzinfo=JST)
     week_id, start, end = iso_week_range_jst(now)
-    # Verify week_id format and that start/end are 7 days apart and Mondays.
-    assert "-W" in week_id
-    assert (end - start).days == 7
-    assert start.weekday() == 0  # Monday
-    assert end.weekday() == 0
+    assert week_id == "2026-W53"
+    assert start == datetime(2026, 12, 28, 0, 0, 0, tzinfo=JST)
+    assert end == datetime(2027, 1, 4, 0, 0, 0, tzinfo=JST)
 
 
 def test_converts_utc_now_to_jst_before_computing() -> None:
@@ -63,3 +62,8 @@ def test_parse_week_id_invalid_format() -> None:
         parse_week_id("2026-17")
     with pytest.raises(ValueError):
         parse_week_id("not-a-week")
+
+
+def test_parse_week_id_canonicalizes_padding() -> None:
+    week_id, _, _ = parse_week_id("2026-W007")
+    assert week_id == "2026-W07"
