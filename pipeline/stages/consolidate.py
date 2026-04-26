@@ -100,6 +100,18 @@ def _append_log(log_path: Path, renames: list[dict[str, Any]], now: datetime) ->
     log_path.write_text(existing + new_block, encoding="utf-8")
 
 
+def _validate_rename(rename: dict[str, Any], available: dict[str, dict[str, int]]) -> None:
+    cat = rename.get("category")
+    src = rename.get("from")
+    dst = rename.get("to")
+    if not isinstance(cat, str) or not isinstance(src, str) or not isinstance(dst, str):
+        raise ValueError(f"consolidate: malformed rename entry: {rename!r}")
+    if cat not in available:
+        raise ValueError(f"consolidate: unknown category in rename: {cat!r}")
+    if src not in available[cat]:
+        raise ValueError(f"consolidate: unknown source subtopic in rename: {cat}/{src}")
+
+
 def run(
     *,
     provider: LLMProvider,
@@ -132,6 +144,9 @@ def run(
 
     if not all_renames:
         return
+
+    for r in all_renames:
+        _validate_rename(r, by_cat)
 
     ts = now()
     for r in all_renames:

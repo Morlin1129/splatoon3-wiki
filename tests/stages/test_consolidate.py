@@ -255,3 +255,67 @@ def test_consolidate_log_appends_across_runs(workspace: Path) -> None:
     text = log_path.read_text(encoding="utf-8")
     assert "## existing previous entry" in text  # preserved
     assert "old-y" in text  # new entry appended
+
+
+def test_consolidate_raises_on_unknown_category(workspace: Path) -> None:
+    _seed_classified(workspace, "01-principles", "2026-04-26-x.md", "x-topic")
+    rename = {
+        "category": "99-bogus",
+        "from": "x-topic",
+        "to": "y-topic",
+        "reason": "test",
+    }
+    provider = FakeLLMProvider(responses=[json.dumps({"renames": [rename]})])
+
+    with pytest.raises(ValueError, match="unknown category"):
+        consolidate.run(
+            provider=provider,
+            stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+            classified_dir=workspace / "classified",
+            wiki_dir=workspace / "wiki",
+            log_path=workspace / "state" / "consolidate_log.md",
+            system_prompt="CONSOLIDATE PROMPT",
+            now=lambda: datetime(2026, 4, 26, 14, 32, 0),
+            root=workspace,
+        )
+
+
+def test_consolidate_raises_on_unknown_source_subtopic(workspace: Path) -> None:
+    _seed_classified(workspace, "01-principles", "2026-04-26-x.md", "x-topic")
+    rename = {
+        "category": "01-principles",
+        "from": "does-not-exist",
+        "to": "y-topic",
+        "reason": "test",
+    }
+    provider = FakeLLMProvider(responses=[json.dumps({"renames": [rename]})])
+
+    with pytest.raises(ValueError, match="unknown source subtopic"):
+        consolidate.run(
+            provider=provider,
+            stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+            classified_dir=workspace / "classified",
+            wiki_dir=workspace / "wiki",
+            log_path=workspace / "state" / "consolidate_log.md",
+            system_prompt="CONSOLIDATE PROMPT",
+            now=lambda: datetime(2026, 4, 26, 14, 32, 0),
+            root=workspace,
+        )
+
+
+def test_consolidate_raises_on_malformed_rename(workspace: Path) -> None:
+    _seed_classified(workspace, "01-principles", "2026-04-26-x.md", "x-topic")
+    rename = {"category": "01-principles", "from": "x-topic"}  # missing 'to'
+    provider = FakeLLMProvider(responses=[json.dumps({"renames": [rename]})])
+
+    with pytest.raises(ValueError, match="malformed rename"):
+        consolidate.run(
+            provider=provider,
+            stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+            classified_dir=workspace / "classified",
+            wiki_dir=workspace / "wiki",
+            log_path=workspace / "state" / "consolidate_log.md",
+            system_prompt="CONSOLIDATE PROMPT",
+            now=lambda: datetime(2026, 4, 26, 14, 32, 0),
+            root=workspace,
+        )
