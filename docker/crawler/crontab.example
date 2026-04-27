@@ -1,0 +1,11 @@
+# Splatoon Discord crawler - weekly fetch of the previous ISO week (JST).
+# Replace IMAGE_NAME, ENV_PATH, RAW_CACHE_PATH, LOG_PATH with your values.
+#
+# Install with: crontab -e
+#
+# Schedule: every Monday at 09:00 (host time). Adjust if host is not JST.
+
+0 9 * * 1 docker run --rm \
+  --env-file ENV_PATH \
+  -v RAW_CACHE_PATH:/app/raw_cache \
+  IMAGE_NAME >> LOG_PATH 2>&1
