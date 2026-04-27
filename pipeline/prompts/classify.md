@@ -1,15 +1,27 @@
-You classify a Splatoon 3 wiki snippet into a fixed category and a subtopic.
+スニペットを、固定されたカテゴリーとサブトピックに分類する。
 
-You will receive:
-- The list of top-level categories (id, label, description) as a YAML block
-- The snippet body
+入力として以下を受け取る:
+- カテゴリーの一覧（id、ラベル、説明）を YAML 形式で
+- 既存のサブトピックの一覧
+- スニペット本文
 
-Task: choose exactly one category id, and invent a short subtopic slug that groups related snippets. Reuse existing subtopic slugs when possible (they will be provided in the input).
+タスク: カテゴリー ID を 1 つだけ選び、関連スニペットをまとめる短いサブトピックのスラッグを作成する。既存のスラッグが入力に含まれている場合は、可能な限り再利用する。
 
-Output JSON only, on a single line, in this shape:
+出力形式:
+JSON のみ、1 行で、以下の形式で出力する:
 `{"category": "<category-id>", "subtopic": "<subtopic-slug>"}`
 
-Rules:
-- `category` MUST be one of the provided ids
-- `subtopic` uses lowercase kebab-case; Japanese characters may appear if needed (e.g. `海女美術-ガチエリア`)
-- No prose, no explanation, no code fences
+ルール:
+- `category` は必ず提供された ID の中から選ぶ。
+- `subtopic` は小文字のケバブケースを使用する。日本語を含めてよい（例: `海女美術-ガチエリア`）。
+- 解説や前置き、コードブロックは出力に含めない。
+
+## サブトピック命名のルール（重要）
+
+- subtopic は「**普遍的で長期的に成長しうる知識単位**」を表す名前にする
+- **日付・個別事象・session 情報を slug に含めない**
+  - ❌ `2026-04-26-general-dakai-home-base-clearing`
+  - ✅ `dakai-fundamentals`
+- 既存の subtopic に類似する内容なら、**必ず既存を再利用する**
+- 既存に類似がなく、明らかに新規概念の場合のみ新規生成する
+- 迷ったら、最も近い既存 subtopic を選ぶ

@@ -6,17 +6,6 @@ from pipeline.config import Category
 from pipeline.frontmatter_io import read_frontmatter
 from pipeline.models import WikiFrontmatter
 
-
-def _extract_title(body: str, *, fallback: str) -> str:
-    """Return the first `## ` heading text, else first `# `, else fallback."""
-    for prefix in ("## ", "# "):
-        for line in body.splitlines():
-            stripped = line.strip()
-            if stripped.startswith(prefix):
-                return stripped[len(prefix) :].strip()
-    return fallback
-
-
 _NO_BODY = "(本文なし)"
 _PARAGRAPH_BREAK_PREFIXES = ("#", "-", "*", ">", "|", "```")
 _SUMMARY_MAX_CHARS = 120
@@ -68,7 +57,15 @@ def _extract_summary(body: str) -> str:
 def _list_pages(cat_dir: Path) -> list[Path]:
     if not cat_dir.is_dir():
         return []
-    return sorted(p for p in cat_dir.glob("*.md") if p.name != "README.md")
+    pages: list[Path] = []
+    for p in sorted(cat_dir.glob("*.md")):
+        if p.name == "README.md":
+            continue
+        fm, _ = read_frontmatter(p, WikiFrontmatter)
+        if fm is not None and fm.tombstone:
+            continue
+        pages.append(p)
+    return pages
 
 
 def _write_category_readme(cat: Category, cat_dir: Path, pages: list[Path]) -> None:
@@ -80,9 +77,8 @@ def _write_category_readme(cat: Category, cat_dir: Path, pages: list[Path]) -> N
             fm, body = read_frontmatter(page_path, WikiFrontmatter)
             if fm is None:
                 raise RuntimeError(f"unreachable: wiki page missing frontmatter: {page_path}")
-            title = _extract_title(body, fallback=fm.subtopic)
             summary = _extract_summary(body)
-            lines.append(f"- [{title}]({page_path.name}) — {summary}")
+            lines.append(f"- [{fm.title}]({page_path.name}) — {summary}")
     cat_dir.mkdir(parents=True, exist_ok=True)
     (cat_dir / "README.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 

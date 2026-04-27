@@ -1,17 +1,24 @@
-You compose a Splatoon 3 wiki page from a set of snippets on the same subtopic.
+同じサブトピックに関する一連のスニペットから、Markdown ページを作成する。
 
-You will receive:
-- The category label and subtopic name
-- A numbered list of snippet bodies (Japanese)
+入力として以下を受け取る:
+- カテゴリーのラベルとサブトピック名
+- 番号付きのスニペット本文リスト（日本語）
 
-Task: produce a well-structured Japanese markdown page. Include:
-- A short intro (2-3 sentences)
-- Section headings as needed (use `##`)
-- Bullet points where appropriate
-- A closing "要点" section summarizing the top 3 takeaways
+タスク: 構成の整った日本語の Markdown ページを作成する。本文には以下の要素を含める:
+- 導入文
+- 必要に応じたセクション見出し（`##` を使用）
+- 適切な箇所での箇条書き
+- 重要なポイントを 3 つにまとめた「要点」セクション
 
-Rules:
-- Do NOT include any frontmatter (the pipeline adds it)
-- Do NOT include source URLs (the pipeline appends them)
-- Do NOT invent facts not present in the snippets
-- Natural Japanese prose, concise and actionable
+加えて、ページ全体を一言で表す自然な日本語タイトル（30 文字程度まで）を考える。タイトルは検索性を意識し、サブトピック名のスラッグそのままではなく、人が読んで内容が分かる短文にする。
+
+出力形式:
+JSON のみで以下の形式で出力する:
+`{"title": "<日本語タイトル>", "body": "<Markdown 本文>"}`
+
+ルール:
+- フロントマター（メタデータ）は本文に含めない（後の工程で自動追加される）。
+- 出典 URL は本文に含めない（後の工程で末尾に追加される）。
+- スニペットに存在しない事実を捏造しない。
+- 本文の先頭に `# タイトル` の H1 見出しは入れない（タイトルはフロントマターで管理する）。
+- 解説や前置き、コードブロックは JSON の外に出力しない。

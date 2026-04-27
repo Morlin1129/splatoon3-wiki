@@ -39,3 +39,12 @@ def test_parse_json_response_raises_with_snippet_on_failure(tmp_path: Path) -> N
 def test_parse_json_response_no_debug_dir_works(tmp_path: Path) -> None:
     result = parse_json_response("[1, 2]", stage="ingest", debug_dir=None)
     assert result == [1, 2]
+
+
+def test_parse_json_response_ignores_trailing_garbage(tmp_path: Path) -> None:
+    raw = '{"category": "03-weapon-role", "subtopic": "kelvin-barrel-range-management"}\nrange-management"}'
+    result = parse_json_response(raw, stage="classify", debug_dir=tmp_path / "debug")
+    assert result == {
+        "category": "03-weapon-role",
+        "subtopic": "kelvin-barrel-range-management",
+    }

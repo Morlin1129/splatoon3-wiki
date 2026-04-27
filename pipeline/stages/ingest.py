@@ -42,13 +42,12 @@ def run(
     raw_dir: Path,
     snippets_dir: Path,
     manifest_path: Path,
-    prompt_path: Path,
+    system_prompt: str,
     now: Callable[[], datetime] = lambda: datetime.now(UTC),
     root: Path | None = None,
 ) -> None:
     root = root or raw_dir.parent
     manifest = Manifest.load(manifest_path)
-    system_prompt = prompt_path.read_text(encoding="utf-8")
     debug_dir = root / "state" / "debug"
 
     for raw_file in sorted(raw_dir.glob("*.md")):

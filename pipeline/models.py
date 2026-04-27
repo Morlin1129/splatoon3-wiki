@@ -16,7 +16,11 @@ class ClassifiedFrontmatter(SnippetFrontmatter):
 
 
 class WikiFrontmatter(BaseModel):
+    title: str = Field(min_length=1)
     category: str = Field(min_length=1)
     subtopic: str = Field(min_length=1)
     sources: list[str] = Field(default_factory=list)
     updated_at: datetime
+    tombstone: bool = False
+    merged_into: str | None = None
+    merged_at: datetime | None = None

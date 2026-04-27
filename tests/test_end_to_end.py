@@ -5,7 +5,7 @@ from pathlib import Path
 
 from pipeline.config import Category, StageConfig
 from pipeline.llm.fake import FakeLLMProvider
-from pipeline.stages import classify, cluster, diff_commit, ingest
+from pipeline.stages import classify, cluster, consolidate, diff_commit, ingest
 from pipeline.stages import compile as compile_stage
 
 
@@ -17,19 +17,8 @@ def _init_repo(root: Path) -> None:
 
 def test_pipeline_end_to_end_with_fake_llm(tmp_path: Path) -> None:
     root = tmp_path
-    for sub in [
-        "sample_raw",
-        "snippets",
-        "classified",
-        "wiki",
-        "state",
-        "pipeline/prompts",
-    ]:
+    for sub in ["sample_raw", "snippets", "classified", "wiki", "state"]:
         (root / sub).mkdir(parents=True, exist_ok=True)
-
-    (root / "pipeline" / "prompts" / "ingest.md").write_text("INGEST", encoding="utf-8")
-    (root / "pipeline" / "prompts" / "classify.md").write_text("CLASSIFY", encoding="utf-8")
-    (root / "pipeline" / "prompts" / "compile.md").write_text("COMPILE", encoding="utf-8")
 
     (root / "sample_raw" / "2026-04-01-notes.md").write_text("右高台の話など。", encoding="utf-8")
     _init_repo(root)
@@ -59,7 +48,7 @@ def test_pipeline_end_to_end_with_fake_llm(tmp_path: Path) -> None:
         raw_dir=root / "sample_raw",
         snippets_dir=root / "snippets",
         manifest_path=root / "state" / "ingest_manifest.json",
-        prompt_path=root / "pipeline" / "prompts" / "ingest.md",
+        system_prompt="INGEST",
         now=lambda: datetime(2026, 4, 24, 12, 0, 0),
         root=root,
     )
@@ -74,16 +63,43 @@ def test_pipeline_end_to_end_with_fake_llm(tmp_path: Path) -> None:
         snippets_dir=root / "snippets",
         classified_dir=root / "classified",
         manifest_path=root / "state" / "ingest_manifest.json",
-        prompt_path=root / "pipeline" / "prompts" / "classify.md",
+        system_prompt="CLASSIFY",
         root=root,
     )
+
+    consolidate_provider = FakeLLMProvider(
+        responses=[json.dumps({"renames": []}, ensure_ascii=False)]
+    )
+    consolidate.run(
+        provider=consolidate_provider,
+        stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+        classified_dir=root / "classified",
+        wiki_dir=root / "wiki",
+        log_path=root / "state" / "consolidate_log.md",
+        system_prompt="CONSOLIDATE",
+        now=lambda: datetime(2026, 4, 24, 12, 0, 0),
+        root=root,
+    )
+    # consolidate was called once (one non-empty category) and made no changes
+    assert len(consolidate_provider.calls) == 1
+    assert not (root / "state" / "consolidate_log.md").exists()
 
     cluster.run(
         classified_dir=root / "classified",
         clusters_path=root / "state" / "clusters.json",
     )
 
-    compile_provider = FakeLLMProvider(responses=["## 海女美術 ガチエリア\n\n本文。"])
+    compile_provider = FakeLLMProvider(
+        responses=[
+            json.dumps(
+                {
+                    "title": "海女美術 ガチエリアの右高台運用",
+                    "body": "## 海女美術 ガチエリア\n\n本文。",
+                },
+                ensure_ascii=False,
+            )
+        ]
+    )
     compile_stage.run(
         provider=compile_provider,
         stage_cfg=StageConfig(provider="fake", model="x", max_tokens=8192),
@@ -92,7 +108,7 @@ def test_pipeline_end_to_end_with_fake_llm(tmp_path: Path) -> None:
         wiki_dir=root / "wiki",
         clusters_path=root / "state" / "clusters.json",
         manifest_path=root / "state" / "ingest_manifest.json",
-        prompt_path=root / "pipeline" / "prompts" / "compile.md",
+        system_prompt="COMPILE",
         source_urls={},
         now=lambda: datetime(2026, 4, 24, 12, 0, 0),
         root=root,

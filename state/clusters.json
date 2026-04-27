@@ -13,8 +13,26 @@
     "classified/01-principles/2026-04-21-dakai-principles-and-routes.md",
     "classified/01-principles/2026-04-21-dakai-support-role.md"
   ],
+  "01-principles/2026-04-26-general-dakai-home-base-clearing": [
+    "classified/01-principles/2026-04-26-general-dakai-home-base-clearing.md"
+  ],
+  "01-principles/2026-04-26-general-osae-waiting-actions": [
+    "classified/01-principles/2026-04-26-general-osae-waiting-actions.md"
+  ],
+  "01-principles/2026-04-26-general-pushing-frontline-priority": [
+    "classified/01-principles/2026-04-26-general-pushing-frontline-priority.md"
+  ],
   "02-rule-stage/2026-04-05-amabi-right-high-suppression": [
     "classified/02-rule-stage/2026-04-05-amabi-right-high-suppression.md"
+  ],
+  "02-rule-stage/2026-04-26-baigai-area-left-drop-visibility": [
+    "classified/02-rule-stage/2026-04-26-baigai-area-left-drop-visibility.md"
+  ],
+  "02-rule-stage/2026-04-26-kinme-area-left-side-control": [
+    "classified/02-rule-stage/2026-04-26-kinme-area-left-side-control.md"
+  ],
+  "02-rule-stage/2026-04-26-kinme-area-right-drop-maintenance": [
+    "classified/02-rule-stage/2026-04-26-kinme-area-right-drop-maintenance.md"
   ],
   "03-weapon-role/2026-04-05-booyah-bomb-placement-strategy": [
     "classified/03-weapon-role/2026-04-05-booyah-bomb-placement-strategy.md"
@@ -30,5 +48,8 @@
   ],
   "03-weapon-role/slayer-role-theory": [
     "classified/03-weapon-role/2026-04-21-role-slayer-definition.md"
+  ],
+  "03-weapon-role/kelvin-barrel-range-management": [
+    "classified/03-weapon-role/2026-04-26-weapon-range-management-kelvin-barrel.md"
   ]
 }
