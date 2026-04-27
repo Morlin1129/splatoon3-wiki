@@ -5,7 +5,7 @@ from pathlib import Path
 
 from pipeline.config import Category, StageConfig
 from pipeline.llm.fake import FakeLLMProvider
-from pipeline.stages import classify, cluster, diff_commit, ingest
+from pipeline.stages import classify, cluster, consolidate, diff_commit, ingest
 from pipeline.stages import compile as compile_stage
 
 
@@ -66,6 +66,23 @@ def test_pipeline_end_to_end_with_fake_llm(tmp_path: Path) -> None:
         system_prompt="CLASSIFY",
         root=root,
     )
+
+    consolidate_provider = FakeLLMProvider(
+        responses=[json.dumps({"renames": []}, ensure_ascii=False)]
+    )
+    consolidate.run(
+        provider=consolidate_provider,
+        stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+        classified_dir=root / "classified",
+        wiki_dir=root / "wiki",
+        log_path=root / "state" / "consolidate_log.md",
+        system_prompt="CONSOLIDATE",
+        now=lambda: datetime(2026, 4, 24, 12, 0, 0),
+        root=root,
+    )
+    # consolidate was called once (one non-empty category) and made no changes
+    assert len(consolidate_provider.calls) == 1
+    assert not (root / "state" / "consolidate_log.md").exists()
 
     cluster.run(
         classified_dir=root / "classified",
