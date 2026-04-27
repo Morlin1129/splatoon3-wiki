@@ -47,15 +47,16 @@ uv run python -m pipeline.main --all
 
 ```
 pipeline/            # パイプライン本体
-  stages/            # Ingest, Classify, Cluster, Compile, Index, Diff
+  stages/            # Ingest, Classify, Consolidate, Cluster, Compile, Index, Diff
   llm/               # Anthropic / Gemini / Fake プロバイダ抽象
   prompts/           # 各ステージのシステムプロンプト
-config/              # categories.yaml (①〜⑤ 固定), pipeline.yaml (stage 設定)
+config/              # categories.yaml (①〜⑤ 固定), pipeline.yaml (stage 設定),
+                     # domain/ (ドメイン文脈)
 sample_raw/          # サンプル原典 MD
 snippets/            # Stage 1 出力（ナレッジ断片）
 classified/          # Stage 2 出力（カテゴリ付与済み）
-wiki/                # Stage 4 出力（公開 Wiki ページ）
-state/               # 差分再生成用マニフェスト
+wiki/                # Stage 5 出力（公開 Wiki ページ、tombstone 含む）
+state/               # 差分再生成用マニフェスト、consolidate_log.md
 tests/               # pytest スイート
 ```
 
