@@ -27,3 +27,14 @@ def test_parse_args_rejects_unknown_stage() -> None:
 def test_parse_args_accepts_index_stage() -> None:
     args = main.parse_args(["--stage", "index"])
     assert args.stage == "index"
+
+
+def test_parse_args_accepts_consolidate_stage() -> None:
+    args = main.parse_args(["--stage", "consolidate"])
+    assert args.stage == "consolidate"
+
+
+def test_stage_names_order_runs_consolidate_between_classify_and_cluster() -> None:
+    names = main.STAGE_NAMES
+    assert names.index("consolidate") == names.index("classify") + 1
+    assert names.index("cluster") == names.index("consolidate") + 1

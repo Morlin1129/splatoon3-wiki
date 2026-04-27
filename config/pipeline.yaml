@@ -9,6 +9,10 @@ stages:
     provider: gemini
     model: gemini-3-flash-preview
     max_tokens: 2048
+  consolidate:
+    provider: gemini
+    model: gemini-3-flash-preview
+    max_tokens: 4096
   compile:
     provider: gemini
     model: gemini-3-flash-preview

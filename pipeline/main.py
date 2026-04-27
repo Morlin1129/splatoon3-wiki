@@ -5,10 +5,10 @@ from pathlib import Path
 
 from pipeline.config import build_system_prompt, load_categories, load_pipeline
 from pipeline.llm.base import get_provider
-from pipeline.stages import classify, cluster, diff_commit, index, ingest
+from pipeline.stages import classify, cluster, consolidate, diff_commit, index, ingest
 from pipeline.stages import compile as compile_stage
 
-STAGE_NAMES = ["ingest", "classify", "cluster", "compile", "index", "diff"]
+STAGE_NAMES = ["ingest", "classify", "consolidate", "cluster", "compile", "index", "diff"]
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -45,6 +45,17 @@ def _run_stage(name: str, root: Path) -> None:
             classified_dir=root / "classified",
             manifest_path=root / "state" / "ingest_manifest.json",
             system_prompt=build_system_prompt(root, "classify"),
+            root=root,
+        )
+    elif name == "consolidate":
+        stage_cfg = pipeline_cfg.stages["consolidate"]
+        consolidate.run(
+            provider=get_provider(stage_cfg),
+            stage_cfg=stage_cfg,
+            classified_dir=root / "classified",
+            wiki_dir=root / "wiki",
+            log_path=root / "state" / "consolidate_log.md",
+            system_prompt=build_system_prompt(root, "consolidate"),
             root=root,
         )
     elif name == "cluster":
