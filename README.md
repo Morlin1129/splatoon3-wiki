@@ -25,12 +25,13 @@ cp .env.example .env
 
 ## パイプライン実行
 
-6 ステージ構成：Ingest → Classify → Cluster → Compile → Index → Diff。中間成果物はすべて Markdown。
+7 ステージ構成：Ingest → Classify → Consolidate → Cluster → Compile → Index → Diff。中間成果物はすべて Markdown。
 
 ```bash
 # 単一ステージ
 uv run python -m pipeline.main --stage ingest
 uv run python -m pipeline.main --stage classify
+uv run python -m pipeline.main --stage consolidate
 uv run python -m pipeline.main --stage cluster
 uv run python -m pipeline.main --stage compile
 uv run python -m pipeline.main --stage index
