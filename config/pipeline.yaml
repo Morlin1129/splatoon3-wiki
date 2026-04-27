@@ -12,7 +12,9 @@ stages:
   consolidate:
     provider: gemini
     model: gemini-3-flash-preview
-    max_tokens: 4096
+    # rename の reason フィールドが日本語で複数件返るため、ingest と同様に
+    # 高めのキャップを与えて JSON が途中で切れないようにする。
+    max_tokens: 16384
   compile:
     provider: gemini
     model: gemini-3-flash-preview

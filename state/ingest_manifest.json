@@ -91,5 +91,54 @@
       "classified": true
     }
   },
-  "wiki": {}
+  "wiki": {
+    "wiki/01-principles/enemy-respawn-prediction.md": {
+      "cluster_fingerprint": "ae2ce41eb47ec8547c1c895c485f4dad487c00fb82ecef733042ef1460cdbe37"
+    },
+    "wiki/01-principles/engagement-mode-switching.md": {
+      "cluster_fingerprint": "cf517e3388a5d5c2fa332bb34dcdaf7872436df1831892fffa07199be7d536be"
+    },
+    "wiki/01-principles/peeking-and-clearing.md": {
+      "cluster_fingerprint": "89fcb6164a4344489a7b46715efe16a28f27e96b18da8a5ed0aa1a99b758b632"
+    },
+    "wiki/01-principles/dakai-fundamentals.md": {
+      "cluster_fingerprint": "050e723facfcb257f69281a32b04abcee87eaee73a5e2023c131154b6f098b4b"
+    },
+    "wiki/01-principles/osae-fundamentals.md": {
+      "cluster_fingerprint": "f70a33f35d285aebb4cd9fa7db1f578742dfff49eeb8f24b8804eba718468414"
+    },
+    "wiki/01-principles/frontline-fundamentals.md": {
+      "cluster_fingerprint": "016c185bb33de4412351a5db5cf8d0362de75baa90f137416f90a261ca23170f"
+    },
+    "wiki/02-rule-stage/amabi-right-high-suppression.md": {
+      "cluster_fingerprint": "41d02843e7d317c0c0c307d1e5f03d6890493338f8562fe8538af61e3136fb50"
+    },
+    "wiki/02-rule-stage/baigai-area-left-drop-visibility.md": {
+      "cluster_fingerprint": "52ab80be63d8564cdf4b7c802caf6ef4047ab25652263a8afdf5bf98ce6720fe"
+    },
+    "wiki/02-rule-stage/kinme-area-left-side-control.md": {
+      "cluster_fingerprint": "efcad9cea9773d63929419f7cb2f8d93f224ecf64e46549a3a70f69aeeb20796"
+    },
+    "wiki/02-rule-stage/kinme-area-right-drop-maintenance.md": {
+      "cluster_fingerprint": "cd10bc51c5f2138ac71efd47ed7fad14743e289ede852e1cee6b5494cdb9560a"
+    },
+    "wiki/03-weapon-role/booyah-bomb-usage.md": {
+      "cluster_fingerprint": "547525cd115cea1c77d627d2482a9ba3a984713f1167e4cd9b511ab6b62ee7de"
+    },
+    "wiki/03-weapon-role/splash-shield-usage.md": {
+      "cluster_fingerprint": "26d839e0c9605f6a7fffdb3f163bf4162b8ed5607d68c7cb28e3ab7fe86a742b"
+    },
+    "wiki/03-weapon-role/tactics-cooler-usage.md": {
+      "cluster_fingerprint": "4ab9439cbcc7d63e79cb38a337d230bdc1178a69e563dd8bc367b13075d38f37"
+    },
+    "wiki/03-weapon-role/skirmisher-role-theory.md": {
+      "cluster_fingerprint": "dce5b8e02c33e915b28e446fa213ff9beda0f72fab352916d69d41881c1f9471"
+    },
+    "wiki/03-weapon-role/slayer-role-theory.md": {
+      "cluster_fingerprint": "2b122d1631b377a3abe7948ed233130a56ec648e6afcee43762e7d77866d0b04"
+    },
+    "wiki/03-weapon-role/kelvin-barrel-range-management.md": {
+      "cluster_fingerprint": "c28fe308bb49bc297d03adbaaa19c1b010159c46422222450d5f195951b9bc39"
+    }
+  }
 }
