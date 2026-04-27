@@ -1,0 +1,43 @@
+# Don't ship local build/test/runtime artifacts to the Docker daemon.
+# Production image only needs: pyproject.toml, uv.lock, crawler/, config/
+
+# Python virtualenvs and caches
+.venv/
+__pycache__/
+*.egg-info/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Git and worktrees
+.git/
+.worktrees/
+
+# Secrets — must never enter image
+.env
+.env.*
+!.env.example
+
+# Pipeline #1 directories not needed by the crawler image
+pipeline/
+tests/
+sample_raw/
+classified/
+snippets/
+state/
+wiki/
+docs/
+
+# Crawler runtime output (bind-mounted in production)
+raw_cache/
+
+# Editor/OS
+.vscode/
+.idea/
+.DS_Store
+
+# Claude Code local state
+.claude/settings.local.json
