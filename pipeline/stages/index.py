@@ -6,7 +6,6 @@ from pipeline.config import Category
 from pipeline.frontmatter_io import read_frontmatter
 from pipeline.models import WikiFrontmatter
 
-
 _NO_BODY = "(本文なし)"
 _PARAGRAPH_BREAK_PREFIXES = ("#", "-", "*", ">", "|", "```")
 _SUMMARY_MAX_CHARS = 120
@@ -58,7 +57,15 @@ def _extract_summary(body: str) -> str:
 def _list_pages(cat_dir: Path) -> list[Path]:
     if not cat_dir.is_dir():
         return []
-    return sorted(p for p in cat_dir.glob("*.md") if p.name != "README.md")
+    pages: list[Path] = []
+    for p in sorted(cat_dir.glob("*.md")):
+        if p.name == "README.md":
+            continue
+        fm, _ = read_frontmatter(p, WikiFrontmatter)
+        if fm is not None and fm.tombstone:
+            continue
+        pages.append(p)
+    return pages
 
 
 def _write_category_readme(cat: Category, cat_dir: Path, pages: list[Path]) -> None:

@@ -54,6 +54,24 @@ def _write_wiki(path: Path, *, title: str, subtopic: str, body: str) -> None:
     write_frontmatter(path, fm, body)
 
 
+def _write_tombstone_wiki(path: Path, *, subtopic: str, merged_into: str) -> None:
+    fm = WikiFrontmatter(
+        title=f"統合済み: {subtopic}",
+        category=path.parent.name,
+        subtopic=subtopic,
+        sources=[],
+        updated_at=datetime(2026, 4, 26, 14, 32, 0),
+        tombstone=True,
+        merged_into=merged_into,
+        merged_at=datetime(2026, 4, 26, 14, 32, 0),
+    )
+    body = (
+        f"# 統合済み: {subtopic}\n\n"
+        f"このページは [{merged_into}]({merged_into}.md) に統合されました。\n"
+    )
+    write_frontmatter(path, fm, body)
+
+
 @pytest.fixture
 def categories() -> list[Category]:
     return [
@@ -177,3 +195,55 @@ def test_index_is_idempotent(tmp_path: Path, categories: list[Category]) -> None
 
     assert first_top == second_top
     assert first_cat == second_cat
+
+
+def test_index_excludes_tombstones_from_category_listing(
+    tmp_path: Path, categories: list[Category]
+) -> None:
+    wiki_dir = tmp_path / "wiki"
+    cat_dir = wiki_dir / "01-principles"
+    cat_dir.mkdir(parents=True)
+
+    _write_wiki(
+        cat_dir / "live-page.md",
+        title="生きているページ",
+        subtopic="live-page",
+        body="## 生きているページ\n\n本文。\n",
+    )
+    _write_tombstone_wiki(
+        cat_dir / "old-page.md",
+        subtopic="old-page",
+        merged_into="live-page",
+    )
+
+    index_stage.run(wiki_dir=wiki_dir, categories=categories)
+
+    cat_readme = (cat_dir / "README.md").read_text(encoding="utf-8")
+    assert "[生きているページ](live-page.md)" in cat_readme
+    assert "old-page.md" not in cat_readme  # tombstone hidden
+    assert "統合済み" not in cat_readme
+
+
+def test_index_excludes_tombstones_from_top_level_count(
+    tmp_path: Path, categories: list[Category]
+) -> None:
+    wiki_dir = tmp_path / "wiki"
+    cat_dir = wiki_dir / "01-principles"
+    cat_dir.mkdir(parents=True)
+
+    _write_wiki(
+        cat_dir / "live.md",
+        title="ライブ",
+        subtopic="live",
+        body="## ライブ\n\n本文。\n",
+    )
+    _write_tombstone_wiki(
+        cat_dir / "tombstone.md",
+        subtopic="tombstone",
+        merged_into="live",
+    )
+
+    index_stage.run(wiki_dir=wiki_dir, categories=categories)
+
+    top = (wiki_dir / "README.md").read_text(encoding="utf-8")
+    assert "01-principles](01-principles/) — 原理原則 — 1 ページ" in top
