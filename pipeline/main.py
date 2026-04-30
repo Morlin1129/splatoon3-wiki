@@ -52,9 +52,11 @@ def _run_stage(name: str, root: Path) -> None:
         consolidate.run(
             provider=get_provider(stage_cfg),
             stage_cfg=stage_cfg,
+            categories=categories,
             classified_dir=root / "classified",
             wiki_dir=root / "wiki",
             log_path=root / "state" / "consolidate_log.md",
+            manifest_path=root / "state" / "ingest_manifest.json",
             system_prompt=build_system_prompt(root, "consolidate"),
             root=root,
         )
