@@ -35,9 +35,10 @@ def _load_snippets(root: Path, paths: list[str]) -> tuple[list[str], set[str]]:
     return bodies, source_files
 
 
-def _build_user_prompt(category_label: str, subtopic: str, bodies: list[str]) -> str:
+def _build_user_prompt(category_label: str, path: list[str], bodies: list[str]) -> str:
     numbered = "\n\n".join(f"{i + 1}. {b}" for i, b in enumerate(bodies))
-    return f"カテゴリー: {category_label}\nサブトピック: {subtopic}\n\nスニペット:\n{numbered}"
+    path_str = " > ".join(path)
+    return f"カテゴリー: {category_label}\nパス: {path_str}\n\nスニペット:\n{numbered}"
 
 
 def _with_sources(body: str, sources: list[str]) -> str:
@@ -48,6 +49,10 @@ def _with_sources(body: str, sources: list[str]) -> str:
         lines.append(f"- {url}")
     lines.append("")
     return body.rstrip() + "\n\n" + "\n".join(lines)
+
+
+def _wiki_output_path(wiki_dir: Path, category_id: str, path: list[str]) -> Path:
+    return wiki_dir / category_id / Path(*path).with_suffix(".md")
 
 
 def run(
@@ -71,8 +76,11 @@ def run(
     debug_dir = root / "state" / "debug"
 
     for key, paths in clusters.items():
-        category_id, subtopic = key.split("/", 1)
-        wiki_rel = f"wiki/{category_id}/{subtopic}.md"
+        category_id, *path_components = key.split("/")
+        if not path_components:
+            raise ValueError(f"compile: cluster key has no path: {key!r}")
+        out_path = _wiki_output_path(wiki_dir, category_id, path_components)
+        wiki_rel = str(out_path.relative_to(root))
         fingerprint = _fingerprint(paths)
 
         prior = manifest.wiki.get(wiki_rel, {}).get("cluster_fingerprint")
@@ -82,7 +90,7 @@ def run(
         bodies, source_files = _load_snippets(root, paths)
         reply = provider.complete(
             system=system_prompt,
-            user=_build_user_prompt(label_by_id[category_id], subtopic, bodies),
+            user=_build_user_prompt(label_by_id[category_id], path_components, bodies),
             model=stage_cfg.model,
             max_tokens=stage_cfg.max_tokens,
             response_format="json",
@@ -98,12 +106,11 @@ def run(
         fm = WikiFrontmatter(
             title=title,
             category=category_id,
-            subtopic=subtopic,
+            path=path_components,
             sources=sources,
             updated_at=updated_at,
         )
-        out = wiki_dir / category_id / f"{subtopic}.md"
-        write_frontmatter(out, fm, final_body)
+        write_frontmatter(out_path, fm, final_body)
 
         manifest.wiki[wiki_rel] = {"cluster_fingerprint": fingerprint}
 
