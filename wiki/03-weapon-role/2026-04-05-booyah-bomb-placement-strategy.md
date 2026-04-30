@@ -1,9 +1,11 @@
 ---
 category: 03-weapon-role
 merged_at: '2026-04-27T02:49:49.177085Z'
-merged_into: booyah-bomb-usage
+merged_into_path:
+- booyah-bomb-usage
+path:
+- 2026-04-05-booyah-bomb-placement-strategy
 sources: []
-subtopic: 2026-04-05-booyah-bomb-placement-strategy
 title: '統合済み: 2026-04-05-booyah-bomb-placement-strategy'
 tombstone: true
 updated_at: '2026-04-27T02:49:49.177085Z'

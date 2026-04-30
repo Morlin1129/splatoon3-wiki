@@ -1,9 +1,11 @@
 ---
 category: 02-rule-stage
 merged_at: '2026-04-27T02:49:49.177085Z'
-merged_into: amabi-right-high-suppression
+merged_into_path:
+- amabi-right-high-suppression
+path:
+- 2026-04-05-amabi-right-high-suppression
 sources: []
-subtopic: 2026-04-05-amabi-right-high-suppression
 title: '統合済み: 2026-04-05-amabi-right-high-suppression'
 tombstone: true
 updated_at: '2026-04-27T02:49:49.177085Z'

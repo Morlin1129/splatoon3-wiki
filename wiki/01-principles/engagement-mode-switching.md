@@ -1,9 +1,10 @@
 ---
 category: 01-principles
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- engagement-mode-switching
 sources: []
-subtopic: engagement-mode-switching
 title: 状況に応じた「モード」と「役割」の能動的な切り替え
 tombstone: false
 updated_at: '2026-04-27T02:50:05.504098Z'

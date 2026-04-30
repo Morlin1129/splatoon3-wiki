@@ -1,9 +1,10 @@
 ---
 category: 03-weapon-role
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- booyah-bomb-usage
 sources: []
-subtopic: booyah-bomb-usage
 title: ナイスダマによる敵の誘導と盤面コントロールの要諦
 tombstone: false
 updated_at: '2026-04-27T02:51:28.316383Z'

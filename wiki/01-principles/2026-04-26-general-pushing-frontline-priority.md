@@ -1,9 +1,11 @@
 ---
 category: 01-principles
 merged_at: '2026-04-27T02:49:49.177085Z'
-merged_into: frontline-fundamentals
+merged_into_path:
+- frontline-fundamentals
+path:
+- 2026-04-26-general-pushing-frontline-priority
 sources: []
-subtopic: 2026-04-26-general-pushing-frontline-priority
 title: '統合済み: 2026-04-26-general-pushing-frontline-priority'
 tombstone: true
 updated_at: '2026-04-27T02:49:49.177085Z'

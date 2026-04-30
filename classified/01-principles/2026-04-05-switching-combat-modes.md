@@ -2,9 +2,10 @@
 category: 01-principles
 content_hash: e80a09c87f67f8a7e38677824ffc8c4a135f9e013050b53e84e6784d3bdde78e
 extracted_at: '2026-04-25T08:21:01.102559Z'
+path:
+- engagement-mode-switching
 source_date: '2026-04-05'
 source_file: sample_raw/2026-04-05-discord-log.md
-subtopic: engagement-mode-switching
 ---
 
 状況に応じて「塗り・ヘイト稼ぎモード」と「潜伏・キルモード」を明確に切り分ける必要がある。位置が露呈している状態で無理に対面を挑むとデスしやすいため、クリアリング中やヘイト稼ぎ中は生存を最優先し、キルを狙う際のみ存在を消して接近するという意識の切り替えが重要。

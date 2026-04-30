@@ -1,9 +1,10 @@
 ---
 category: 01-principles
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- peeking-and-clearing
 sources: []
-subtopic: peeking-and-clearing
 title: 安全な索敵とピークの基本：カッティングパイによるクリアリング
 tombstone: false
 updated_at: '2026-04-27T06:44:13.224577Z'

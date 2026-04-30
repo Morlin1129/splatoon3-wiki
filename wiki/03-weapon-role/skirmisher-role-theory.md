@@ -1,9 +1,10 @@
 ---
 category: 03-weapon-role
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- skirmisher-role-theory
 sources: []
-subtopic: skirmisher-role-theory
 title: スカーミッシャーの本質：ヘイト管理と生存による攪乱の理論
 tombstone: false
 updated_at: '2026-04-27T02:51:52.317078Z'

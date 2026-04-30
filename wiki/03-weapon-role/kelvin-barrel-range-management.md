@@ -1,9 +1,10 @@
 ---
 category: 03-weapon-role
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- kelvin-barrel-range-management
 sources: []
-subtopic: kelvin-barrel-range-management
 title: ケルビン・バレルにおける射程管理と間合いの保ち方
 tombstone: false
 updated_at: '2026-04-27T02:52:08.376853Z'

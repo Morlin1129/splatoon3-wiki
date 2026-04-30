@@ -1,9 +1,10 @@
 ---
 category: 01-principles
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- enemy-respawn-prediction
 sources: []
-subtopic: enemy-respawn-prediction
 title: 敵の復帰予測：リスポーン時間から位置を逆算する技術
 tombstone: false
 updated_at: '2026-04-27T02:49:57.179312Z'

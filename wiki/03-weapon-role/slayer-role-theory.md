@@ -1,9 +1,10 @@
 ---
 category: 03-weapon-role
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- slayer-role-theory
 sources: []
-subtopic: slayer-role-theory
 title: スレイヤーの本質：連携による確実なキル遂行
 tombstone: false
 updated_at: '2026-04-27T02:52:01.781517Z'

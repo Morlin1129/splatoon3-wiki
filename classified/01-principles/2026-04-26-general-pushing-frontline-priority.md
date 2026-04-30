@@ -2,9 +2,10 @@
 category: 01-principles
 content_hash: b3853a55f5b847c993e5df74b51ae4587538c17176f8e9040e854545fb8575a5
 extracted_at: '2026-04-26T01:54:16.026556Z'
+path:
+- frontline-fundamentals
 source_date: '2026-04-26'
 source_file: sample_raw/20260-04-23-discodrd-log.md
-subtopic: frontline-fundamentals
 ---
 
 敵が自陣に侵入していないことが確実で、かつ攻勢に移るべき場面では、手前（自陣付近）を丁寧に塗るよりも、素早く前線を上げて敵に圧力をかけることを優先する。塗りよりもポジション確保のスピードが状況の維持に直結する。

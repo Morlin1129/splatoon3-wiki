@@ -1,9 +1,10 @@
 ---
 category: 02-rule-stage
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- kinme-area-left-side-control
 sources: []
-subtopic: kinme-area-left-side-control
 title: キンメダイ地区・ガチエリアにおける左サイドの重要性と維持の原則
 tombstone: false
 updated_at: '2026-04-27T02:51:12.192358Z'

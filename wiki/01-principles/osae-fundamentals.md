@@ -1,9 +1,10 @@
 ---
 category: 01-principles
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- osae-fundamentals
 sources: []
-subtopic: osae-fundamentals
 title: 抑えの原理原則：敵の起点潰しと役割の分散
 tombstone: false
 updated_at: '2026-04-27T06:44:21.709124Z'

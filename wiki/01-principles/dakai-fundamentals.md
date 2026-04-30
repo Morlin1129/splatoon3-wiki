@@ -1,9 +1,10 @@
 ---
 category: 01-principles
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- dakai-fundamentals
 sources: []
-subtopic: dakai-fundamentals
 title: 打開の基本原則：有利な条件の構築と手前処理の徹底
 tombstone: false
 updated_at: '2026-04-27T02:50:29.772065Z'

@@ -1,9 +1,11 @@
 ---
 category: 02-rule-stage
 merged_at: '2026-04-27T02:49:49.177085Z'
-merged_into: baigai-area-left-drop-visibility
+merged_into_path:
+- baigai-area-left-drop-visibility
+path:
+- 2026-04-26-baigai-area-left-drop-visibility
 sources: []
-subtopic: 2026-04-26-baigai-area-left-drop-visibility
 title: '統合済み: 2026-04-26-baigai-area-left-drop-visibility'
 tombstone: true
 updated_at: '2026-04-27T02:49:49.177085Z'

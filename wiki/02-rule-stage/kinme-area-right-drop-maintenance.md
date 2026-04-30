@@ -1,9 +1,10 @@
 ---
 category: 02-rule-stage
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- kinme-area-right-drop-maintenance
 sources: []
-subtopic: kinme-area-right-drop-maintenance
 title: キンメダイ地区エリア：右降りでのポジション維持とヘイト稼ぎ
 tombstone: false
 updated_at: '2026-04-27T02:51:19.581122Z'

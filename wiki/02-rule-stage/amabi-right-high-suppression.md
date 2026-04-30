@@ -1,9 +1,10 @@
 ---
 category: 02-rule-stage
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- amabi-right-high-suppression
 sources: []
-subtopic: amabi-right-high-suppression
 title: 海女美術大学ガチエリア：右高台制圧による盤面維持と生存の重要性
 tombstone: false
 updated_at: '2026-04-27T02:50:55.910423Z'

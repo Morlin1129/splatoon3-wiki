@@ -1,9 +1,10 @@
 ---
 category: 03-weapon-role
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- tactics-cooler-usage
 sources: []
-subtopic: tactics-cooler-usage
 title: エナジースタンドの設置場所選びとスペシャル性能アップの活用法
 tombstone: false
 updated_at: '2026-04-27T02:51:44.681962Z'

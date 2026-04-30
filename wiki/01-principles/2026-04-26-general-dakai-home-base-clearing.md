@@ -1,9 +1,11 @@
 ---
 category: 01-principles
 merged_at: '2026-04-27T02:49:49.177085Z'
-merged_into: dakai-fundamentals
+merged_into_path:
+- dakai-fundamentals
+path:
+- 2026-04-26-general-dakai-home-base-clearing
 sources: []
-subtopic: 2026-04-26-general-dakai-home-base-clearing
 title: '統合済み: 2026-04-26-general-dakai-home-base-clearing'
 tombstone: true
 updated_at: '2026-04-27T02:49:49.177085Z'

@@ -1,9 +1,11 @@
 ---
 category: 01-principles
 merged_at: '2026-04-27T02:49:49.177085Z'
-merged_into: osae-fundamentals
+merged_into_path:
+- osae-fundamentals
+path:
+- 2026-04-26-general-osae-waiting-actions
 sources: []
-subtopic: 2026-04-26-general-osae-waiting-actions
 title: '統合済み: 2026-04-26-general-osae-waiting-actions'
 tombstone: true
 updated_at: '2026-04-27T02:49:49.177085Z'

@@ -1,9 +1,10 @@
 ---
 category: 03-weapon-role
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- splash-shield-usage
 sources: []
-subtopic: splash-shield-usage
 title: スプラッシュシールドで射線を限定し、1対1の状況を強制する技術
 tombstone: false
 updated_at: '2026-04-27T02:51:35.232685Z'

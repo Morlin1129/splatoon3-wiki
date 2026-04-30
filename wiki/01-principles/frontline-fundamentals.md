@@ -1,9 +1,10 @@
 ---
 category: 01-principles
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- frontline-fundamentals
 sources: []
-subtopic: frontline-fundamentals
 title: 攻勢時における前線押し上げとポジション確保の優先順位
 tombstone: false
 updated_at: '2026-04-27T02:50:45.245539Z'

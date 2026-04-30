@@ -1,9 +1,10 @@
 ---
 category: 02-rule-stage
 merged_at: null
-merged_into: null
+merged_into_path: null
+path:
+- baigai-area-left-drop-visibility
 sources: []
-subtopic: baigai-area-left-drop-visibility
 title: バイガイ放水路ガチエリア：左側からのアプローチと視界確保
 tombstone: false
 updated_at: '2026-04-27T02:51:04.717662Z'
