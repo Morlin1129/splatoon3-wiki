@@ -2,15 +2,20 @@ categories:
   - id: 01-principles
     label: 原理原則
     description: ルール・ステージ・ブキ非依存の普遍理論
+    fixed_levels: []
   - id: 02-rule-stage
     label: ルール×ステージ
     description: ルール×ステージ固有の定石
+    fixed_levels: []
   - id: 03-weapon-role
     label: ブキ・役割
     description: ブキ／サブ／スペシャル／ロール固有のノウハウ（ギアパワー構成含む）
+    fixed_levels: []
   - id: 04-stepup
     label: ステップアップガイド
     description: XP1800-2400 向けに ①②③ から抽出したエッセンス集
+    fixed_levels: []
   - id: 05-glossary
     label: 用語集
     description: スプラトゥーン用語／FPS・TPS 用語
+    fixed_levels: []
