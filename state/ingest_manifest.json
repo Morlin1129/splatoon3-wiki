@@ -18,20 +18,24 @@
       "source_hash": "e80a09c87f67f8a7e38677824ffc8c4a135f9e013050b53e84e6784d3bdde78e",
       "classified": true,
       "classified_path": [
-        "amabi-right-high-suppression"
+        "area",
+        "amabi",
+        "right-high-ground-control"
       ]
     },
     "snippets/2026-04-05-using-cover-and-angles.md": {
       "source_hash": "e80a09c87f67f8a7e38677824ffc8c4a135f9e013050b53e84e6784d3bdde78e",
       "classified": true,
       "classified_path": [
-        "peeking-and-clearing"
+        "fundamentals",
+        "cover-usage-and-clearing"
       ]
     },
     "snippets/2026-04-05-switching-combat-modes.md": {
       "source_hash": "e80a09c87f67f8a7e38677824ffc8c4a135f9e013050b53e84e6784d3bdde78e",
       "classified": true,
       "classified_path": [
+        "fundamentals",
         "engagement-mode-switching"
       ]
     },
@@ -39,62 +43,71 @@
       "source_hash": "e80a09c87f67f8a7e38677824ffc8c4a135f9e013050b53e84e6784d3bdde78e",
       "classified": true,
       "classified_path": [
-        "booyah-bomb-usage"
+        "special-usage",
+        "zoning-and-displacement"
       ]
     },
     "snippets/2026-04-05-splash-shield-directional-cover.md": {
       "source_hash": "e80a09c87f67f8a7e38677824ffc8c4a135f9e013050b53e84e6784d3bdde78e",
       "classified": true,
       "classified_path": [
-        "splash-shield-usage"
+        "sub-weapon-tactics",
+        "splash-shield-defensive-positioning"
       ]
     },
     "snippets/2026-04-05-tacticooler-positioning-and-gear.md": {
       "source_hash": "e80a09c87f67f8a7e38677824ffc8c4a135f9e013050b53e84e6784d3bdde78e",
       "classified": true,
       "classified_path": [
-        "tactics-cooler-usage"
+        "special-usage",
+        "energy-stand-deployment-and-gear"
       ]
     },
     "snippets/2026-04-05-enemy-respawn-tracking.md": {
       "source_hash": "e80a09c87f67f8a7e38677824ffc8c4a135f9e013050b53e84e6784d3bdde78e",
       "classified": true,
       "classified_path": [
-        "enemy-respawn-prediction"
+        "situational-awareness",
+        "respawn-timing-prediction"
       ]
     },
     "snippets/2026-04-21-dakai-principles-and-routes.md": {
       "source_hash": "a4a1a102aecc79984588c1416f2f8564f802faf68199d87e1c7f72bca7cc9016",
       "classified": true,
       "classified_path": [
-        "dakai-fundamentals"
+        "fundamentals",
+        "dakai-principles"
       ]
     },
     "snippets/2026-04-21-dakai-support-role.md": {
       "source_hash": "a4a1a102aecc79984588c1416f2f8564f802faf68199d87e1c7f72bca7cc9016",
       "classified": true,
       "classified_path": [
-        "dakai-fundamentals"
+        "fundamentals",
+        "dakai-principles"
       ]
     },
     "snippets/2026-04-21-role-skirmisher-definition.md": {
       "source_hash": "a4a1a102aecc79984588c1416f2f8564f802faf68199d87e1c7f72bca7cc9016",
       "classified": true,
       "classified_path": [
-        "skirmisher-role-theory"
+        "fundamentals",
+        "skirmisher-role-fundamentals"
       ]
     },
     "snippets/2026-04-21-role-slayer-definition.md": {
       "source_hash": "a4a1a102aecc79984588c1416f2f8564f802faf68199d87e1c7f72bca7cc9016",
       "classified": true,
       "classified_path": [
-        "slayer-role-theory"
+        "fundamentals",
+        "slayer-role-fundamentals"
       ]
     },
     "snippets/2026-04-21-fluid-roles-concept.md": {
       "source_hash": "a4a1a102aecc79984588c1416f2f8564f802faf68199d87e1c7f72bca7cc9016",
       "classified": true,
       "classified_path": [
+        "fundamentals",
         "engagement-mode-switching"
       ]
     },
@@ -102,49 +115,60 @@
       "source_hash": "b3853a55f5b847c993e5df74b51ae4587538c17176f8e9040e854545fb8575a5",
       "classified": true,
       "classified_path": [
-        "kinme-area-right-drop-maintenance"
+        "area",
+        "kinme",
+        "right-side-approach"
       ]
     },
     "snippets/2026-04-26-kinme-area-left-side-control.md": {
       "source_hash": "b3853a55f5b847c993e5df74b51ae4587538c17176f8e9040e854545fb8575a5",
       "classified": true,
       "classified_path": [
-        "kinme-area-left-side-control"
+        "area",
+        "kinme",
+        "left-side-control"
       ]
     },
     "snippets/2026-04-26-general-pushing-frontline-priority.md": {
       "source_hash": "b3853a55f5b847c993e5df74b51ae4587538c17176f8e9040e854545fb8575a5",
       "classified": true,
       "classified_path": [
-        "frontline-fundamentals"
+        "fundamentals",
+        "solidifying-principles"
       ]
     },
     "snippets/2026-04-26-baigai-area-left-drop-visibility.md": {
       "source_hash": "b3853a55f5b847c993e5df74b51ae4587538c17176f8e9040e854545fb8575a5",
       "classified": true,
       "classified_path": [
-        "baigai-area-left-drop-visibility"
+        "area",
+        "baigai",
+        "left-side-approach-visibility"
       ]
     },
     "snippets/2026-04-26-general-osae-waiting-actions.md": {
       "source_hash": "b3853a55f5b847c993e5df74b51ae4587538c17176f8e9040e854545fb8575a5",
       "classified": true,
       "classified_path": [
-        "osae-fundamentals"
+        "fundamentals",
+        "solidifying-principles"
       ]
     },
     "snippets/2026-04-26-weapon-range-management-kelvin-barrel.md": {
       "source_hash": "b3853a55f5b847c993e5df74b51ae4587538c17176f8e9040e854545fb8575a5",
       "classified": true,
       "classified_path": [
-        "kelvin-barrel-range-management"
+        "shooter",
+        "kelvin-525",
+        "spacing-and-range-management"
       ]
     },
     "snippets/2026-04-26-general-dakai-home-base-clearing.md": {
       "source_hash": "b3853a55f5b847c993e5df74b51ae4587538c17176f8e9040e854545fb8575a5",
       "classified": true,
       "classified_path": [
-        "dakai-fundamentals"
+        "fundamentals",
+        "dakai-principles"
       ]
     }
   },
@@ -196,63 +220,138 @@
     },
     "wiki/03-weapon-role/kelvin-barrel-range-management.md": {
       "cluster_fingerprint": "c28fe308bb49bc297d03adbaaa19c1b010159c46422222450d5f195951b9bc39"
+    },
+    "wiki/01-principles/special-usage/zoning-and-displacement.md": {
+      "cluster_fingerprint": "862500f44db1e643f3bd442f5ee84e2755e29a1ec175101e42e47f43518331f6"
+    },
+    "wiki/01-principles/situational-awareness/respawn-timing-prediction.md": {
+      "cluster_fingerprint": "ae2ce41eb47ec8547c1c895c485f4dad487c00fb82ecef733042ef1460cdbe37"
+    },
+    "wiki/01-principles/sub-weapon-tactics/splash-shield-defensive-positioning.md": {
+      "cluster_fingerprint": "273e9fec2c0c8aef36c2ce51fa0c1db775f70bcc8f6bd62bbd44d9e47d15279c"
+    },
+    "wiki/01-principles/fundamentals/engagement-mode-switching.md": {
+      "cluster_fingerprint": "cf517e3388a5d5c2fa332bb34dcdaf7872436df1831892fffa07199be7d536be"
+    },
+    "wiki/01-principles/special-usage/energy-stand-deployment-and-gear.md": {
+      "cluster_fingerprint": "3b634a290255b7a17f2a4019f905202c222e80ca0d6f0a01202be487bbe07f92"
+    },
+    "wiki/01-principles/fundamentals/cover-usage-and-clearing.md": {
+      "cluster_fingerprint": "89fcb6164a4344489a7b46715efe16a28f27e96b18da8a5ed0aa1a99b758b632"
+    },
+    "wiki/01-principles/fundamentals/dakai-principles.md": {
+      "cluster_fingerprint": "050e723facfcb257f69281a32b04abcee87eaee73a5e2023c131154b6f098b4b"
+    },
+    "wiki/01-principles/fundamentals/skirmisher-role-fundamentals.md": {
+      "cluster_fingerprint": "b44e5eee48a0c0efdf95e48eced9c42e99935d895fc9d07d9a56e1251556f743"
+    },
+    "wiki/01-principles/fundamentals/slayer-role-fundamentals.md": {
+      "cluster_fingerprint": "ad6cf360dadee6f77701f541f83bb0bd356771e8f6352df8ed1f7d5af00168ec"
+    },
+    "wiki/01-principles/fundamentals/solidifying-principles.md": {
+      "cluster_fingerprint": "65e29af1372f42f2fd89e1549141aa0b9c559019e9e58093eaff1b5c1ba13e27"
+    },
+    "wiki/02-rule-stage/area/amabi/right-high-ground-control.md": {
+      "cluster_fingerprint": "41d02843e7d317c0c0c307d1e5f03d6890493338f8562fe8538af61e3136fb50"
+    },
+    "wiki/02-rule-stage/area/baigai/left-side-approach-visibility.md": {
+      "cluster_fingerprint": "52ab80be63d8564cdf4b7c802caf6ef4047ab25652263a8afdf5bf98ce6720fe"
+    },
+    "wiki/02-rule-stage/area/kinme/left-side-control.md": {
+      "cluster_fingerprint": "efcad9cea9773d63929419f7cb2f8d93f224ecf64e46549a3a70f69aeeb20796"
+    },
+    "wiki/02-rule-stage/area/kinme/right-side-approach.md": {
+      "cluster_fingerprint": "cd10bc51c5f2138ac71efd47ed7fad14743e289ede852e1cee6b5494cdb9560a"
+    },
+    "wiki/03-weapon-role/shooter/kelvin-525/spacing-and-range-management.md": {
+      "cluster_fingerprint": "c28fe308bb49bc297d03adbaaa19c1b010159c46422222450d5f195951b9bc39"
+    }
+  },
+  "consolidate": {
+    "01-principles": {
+      "path_frequency_hash": "5e0864cef8274ce9f4b73a08e57b79199c56ca7c42fba1e7c5c5ac0eba888b43",
+      "last_run_at": "2026-04-30T05:27:11.363331+00:00"
+    },
+    "02-rule-stage": {
+      "path_frequency_hash": "d87ca42a5937a7cd7f3374d5c472117616fba7f77e0af087312a8cc2b37f9395",
+      "last_run_at": "2026-04-30T05:27:14.253281+00:00"
+    },
+    "03-weapon-role": {
+      "path_frequency_hash": "882a413a6c2264258c3db720e692310f6c2e5433679f8428e550a43f1493281b",
+      "last_run_at": "2026-04-30T05:27:16.280039+00:00"
     }
   },
   "known_paths_cache": {
     "01-principles": [
       [
-        "dakai-fundamentals"
+        "fundamentals",
+        "cover-usage-and-clearing"
       ],
       [
-        "enemy-respawn-prediction"
+        "fundamentals",
+        "dakai-principles"
       ],
       [
+        "fundamentals",
         "engagement-mode-switching"
       ],
       [
-        "frontline-fundamentals"
+        "fundamentals",
+        "skirmisher-role-fundamentals"
       ],
       [
-        "osae-fundamentals"
+        "fundamentals",
+        "slayer-role-fundamentals"
       ],
       [
-        "peeking-and-clearing"
+        "fundamentals",
+        "solidifying-principles"
+      ],
+      [
+        "situational-awareness",
+        "respawn-timing-prediction"
+      ],
+      [
+        "special-usage",
+        "energy-stand-deployment-and-gear"
+      ],
+      [
+        "special-usage",
+        "zoning-and-displacement"
+      ],
+      [
+        "sub-weapon-tactics",
+        "splash-shield-defensive-positioning"
       ]
     ],
     "02-rule-stage": [
       [
-        "amabi-right-high-suppression"
+        "area",
+        "amabi",
+        "right-high-ground-control"
       ],
       [
-        "baigai-area-left-drop-visibility"
+        "area",
+        "baigai",
+        "left-side-approach-visibility"
       ],
       [
-        "kinme-area-left-side-control"
+        "area",
+        "kinme",
+        "left-side-control"
       ],
       [
-        "kinme-area-right-drop-maintenance"
+        "area",
+        "kinme",
+        "right-side-approach"
       ]
     ],
     "03-weapon-role": [
       [
-        "booyah-bomb-usage"
-      ],
-      [
-        "kelvin-barrel-range-management"
-      ],
-      [
-        "skirmisher-role-theory"
-      ],
-      [
-        "slayer-role-theory"
-      ],
-      [
-        "splash-shield-usage"
-      ],
-      [
-        "tactics-cooler-usage"
+        "shooter",
+        "kelvin-525",
+        "spacing-and-range-management"
       ]
     ]
-  },
-  "consolidate": {}
+  }
 }
