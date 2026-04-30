@@ -148,8 +148,65 @@ def test_consolidate_applies_path_rename(workspace: Path) -> None:
     assert fm.path == ["new-name"]
 
 
+def test_consolidate_tombstone_link_is_relative_sibling(workspace: Path) -> None:
+    """When a 1-layer path is renamed, the tombstone wiki page must link to the
+    sibling file (e.g. `new-name.md`), not `../new-name.md` (which points outside
+    the category directory)."""
+    _seed_classified(workspace, "01-principles", "x.md", ["old-name"])
+    # Pre-create the wiki page so consolidate writes a tombstone over it.
+    from pipeline.models import WikiFrontmatter
+
+    old_wiki = workspace / "wiki" / "01-principles" / "old-name.md"
+    old_wiki.parent.mkdir(parents=True, exist_ok=True)
+    fm = WikiFrontmatter(
+        title="old",
+        category="01-principles",
+        path=["old-name"],
+        sources=[],
+        updated_at=datetime(2026, 4, 30),
+    )
+    write_frontmatter(old_wiki, fm, "本文")
+
+    manifest_path = workspace / "state" / "ingest_manifest.json"
+    provider = FakeLLMProvider(
+        responses=[
+            json.dumps(
+                {
+                    "renames": [
+                        {
+                            "category": "01-principles",
+                            "from_path": ["old-name"],
+                            "to_path": ["new-name"],
+                            "reason": "テスト",
+                        }
+                    ]
+                }
+            )
+        ]
+    )
+    consolidate.run(
+        provider=provider,
+        stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+        categories=_categories_principles_only(),
+        classified_dir=workspace / "classified",
+        wiki_dir=workspace / "wiki",
+        log_path=workspace / "state" / "consolidate_log.md",
+        manifest_path=manifest_path,
+        system_prompt="x",
+        now=lambda: datetime(2026, 4, 30),
+        root=workspace,
+    )
+
+    tombstone_text = old_wiki.read_text(encoding="utf-8")
+    # The link target must be the sibling file, not parent-relative
+    assert "(new-name.md)" in tombstone_text
+    assert "../new-name.md" not in tombstone_text
+
+
 def test_consolidate_rejects_rename_changing_enumerated_layer(workspace: Path) -> None:
-    _seed_classified(workspace, "03-weapon-role", "x.md", ["shooter", "splash-shooter"])
+    # Seed a path with a free tail ("gear") so consolidate's enumerated-only
+    # skip doesn't trigger and the LLM call (with its bad rename) actually runs.
+    _seed_classified(workspace, "03-weapon-role", "x.md", ["shooter", "splash-shooter", "gear"])
     manifest_path = workspace / "state" / "ingest_manifest.json"
 
     categories = [
@@ -184,8 +241,8 @@ def test_consolidate_rejects_rename_changing_enumerated_layer(workspace: Path) -
                     "renames": [
                         {
                             "category": "03-weapon-role",
-                            "from_path": ["shooter", "splash-shooter"],
-                            "to_path": ["roller", "splat-roller"],
+                            "from_path": ["shooter", "splash-shooter", "gear"],
+                            "to_path": ["roller", "splat-roller", "gear"],
                             "reason": "x",
                         }
                     ]

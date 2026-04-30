@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from pipeline.config import Category, FixedLevel, StageConfig
+from pipeline.config import Category, StageConfig
 from pipeline.frontmatter_io import read_frontmatter, write_frontmatter
 from pipeline.llm.base import LLMProvider
 from pipeline.llm.parsing import parse_json_response
@@ -53,41 +54,6 @@ def _all_levels_enumerated(category: Category) -> bool:
     return bool(category.fixed_levels) and all(
         lvl.mode == "enumerated" for lvl in category.fixed_levels
     )
-
-
-def _enumerated_paths_fully_cover(category: Category, freq_map: dict[tuple[str, ...], int]) -> bool:
-    """True when the observed paths are exactly the complete enumerated set.
-
-    If the observed paths are a strict subset of all possible enumerated
-    combinations, rename opportunities may still exist (e.g. only some parent
-    values are represented). We only skip when the observed paths match the
-    *complete* set of enumerated combinations — meaning there is nothing to
-    rename.
-    """
-    levels = category.fixed_levels
-    if not levels:
-        return False
-
-    def _level_values(lvl: FixedLevel, parent_val: str | None) -> list[str]:
-        if lvl.values is not None:
-            return [v.id for v in lvl.values]
-        if lvl.values_by_parent is not None and parent_val is not None:
-            return [v.id for v in lvl.values_by_parent.get(parent_val, [])]
-        return []
-
-    # Build all valid enumerated path tuples via layer-by-layer expansion
-    current_prefixes: list[tuple[str, ...]] = [()]
-    for lvl in levels:
-        next_prefixes: list[tuple[str, ...]] = []
-        for prefix in current_prefixes:
-            parent_val = prefix[-1] if prefix else None
-            for val_id in _level_values(lvl, parent_val):
-                next_prefixes.append((*prefix, val_id))
-        current_prefixes = next_prefixes
-    all_enum_paths = set(current_prefixes)
-
-    observed = set(freq_map.keys())
-    return observed == all_enum_paths
 
 
 def _build_user_prompt(category: Category, freq_map: dict[tuple[str, ...], int]) -> str:
@@ -166,11 +132,15 @@ def _tombstone_wiki_page(
         merged_into_path=dst,
         merged_at=now,
     )
-    dst_rel = Path(*dst).with_suffix(".md").as_posix()
+    # Compute a relative link from the tombstone to the merged-into page.
+    # Both files live under wiki/<category>/, so we compute relative to the
+    # tombstone's parent directory.
+    dst_file = wiki_dir / category / Path(*dst).with_suffix(".md")
+    dst_rel = os.path.relpath(dst_file, old_wiki.parent)
     body_lines = [
         f"# 統合済み: {src_label}",
         "",
-        f"このページは [{dst_label}](../{dst_rel}) に統合されました。",
+        f"このページは [{dst_label}]({dst_rel}) に統合されました。",
     ]
     if reason:
         body_lines.append("")
@@ -233,11 +203,11 @@ def run(
         if cat is None:
             continue
 
-        if (
-            _all_levels_enumerated(cat)
-            and not _has_free_tail(cat, freq_map)
-            and _enumerated_paths_fully_cover(cat, freq_map)
-        ):
+        # Skip categories whose every fixed level is enumerated AND whose data
+        # contains no free tail. In that state every component of every path is
+        # locked to a YAML value, so no rename is even legal — the LLM cannot
+        # produce a useful suggestion.
+        if _all_levels_enumerated(cat) and not _has_free_tail(cat, freq_map):
             continue
 
         new_hash = _hash_frequency_map(freq_map)
