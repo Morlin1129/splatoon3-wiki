@@ -66,7 +66,87 @@
 
 ---
 
+## 階層タクソノミー × 差分実行（2026-04-30 spec から退避した将来検討項目）
+
+設計 spec: [docs/superpowers/specs/2026-04-30-hierarchical-taxonomy-and-incremental-execution-design.md](docs/superpowers/specs/2026-04-30-hierarchical-taxonomy-and-incremental-execution-design.md)
+実装プラン: [docs/superpowers/plans/2026-04-30-hierarchical-taxonomy-and-incremental-execution.md](docs/superpowers/plans/2026-04-30-hierarchical-taxonomy-and-incremental-execution.md)
+
+### 7. 設定変更時の自動再生成（YAGNI、将来検討）
+
+**背景**: 差分実行はデータ変更のみ追従。プロンプト・モデル・categories.yaml の
+変更時は `--rebuild` で明示的にやり直す前提（spec §3.3）。
+
+**改善余地（段階的に重い順）**:
+1. プロンプト/モデルハッシュを manifest に記録、変わったら自動再生成
+2. categories.yaml の enumerated 値追加 → 該当ブランチだけ再 classify
+3. AI が更新範囲を判断して必要部分だけ再生成（究極形、超 YAGNI）
+
+**いつ対処するか**: 運用で「設定変えたのに反映されない」事故が頻発したら。
+
+### 8. 中間ノードの LLM 生成 README（YAGNI）
+
+**背景**: 現状は静的索引（リンク一覧）のみ（spec §3.2 案 C）。LLM が「シューターという
+種別の概要」のような説明文を書けば閲覧体験は向上する。ただしノード数だけ LLM コール
+が増える。
+
+**いつ対処するか**: ユーザーが中間ノードの説明を欲しがる事象が観測されたら。
+
+### 9. 並列化 / 非同期化（YAGNI）
+
+**背景**: 差分実行で十分速いはず。観測してから判断する。
+
+**いつ対処するか**: 差分実行下でも実行時間が運用許容を超えるとき。
+
+### 10. 第 2 テナント（社内ナレッジ）並走（YAGNI）
+
+**背景**: spec §2 で C 案として提示。Splatoon 多層化（B）の見通しが立ってから取り組む。
+
+**いつ対処するか**: B 案の実運用がしばらく回り、汎用化の証明が必要なとき。
+
+### 11. リーフが中間ノードに昇格するケース（実装時に未解決）
+
+**背景**: 既存リーフ `wiki/X/foo.md` に対して、後から path `[X, foo, bar]` の snippet
+が追加されたら `foo` は中間ノードに昇格する。`wiki/X/foo.md` と `wiki/X/foo/`
+ディレクトリが衝突（spec §14）。
+
+**想定対応**: compile ステージで衝突検知 → 旧リーフを `wiki/X/foo/_index.md` に退避し、
+ディレクトリを作成。index ステージは `_index.md` を「直接配下のページ」として扱う。
+
+**いつ対処するか**: 実運用でこのシナリオが発生したら。E2E テストでカバー。
+
+### 12. ブキ・ステージ列挙の自動生成（運用負荷）
+
+**背景**: `config/categories.yaml` の `02-rule-stage` のステージ列挙、`03-weapon-role`
+の `values_by_parent` のブキ列挙は、新コンテンツ追加で増える可能性。手動メンテは
+苦痛になりかねない。
+
+**改善余地**:
+- `config/categories/03-weapon-role.yaml` のような分割
+- 公式ブキデータ（CSV / JSON）からの自動生成スクリプト
+
+**いつ対処するか**: ブキ追加で YAML が膨れすぎたら。
+
+### 13. classify --rebuild 時の旧カテゴリファイル削除（実装中に発覚）
+
+**背景**: `--stage classify --rebuild` で再分類すると、LLM が snippet を別カテゴリに
+配置し直すケースがある（例: 役割定義が `03-weapon-role/role-skirmisher` → `01-principles/
+fundamentals/skirmisher-role-fundamentals`）。このとき新しい classified ファイルは
+書かれるが、**旧カテゴリの classified ファイルは削除されない** ので、`classified/` に
+重複が残る。Task 15 では一時的なクリーンアップスクリプトで対処した。
+
+**改善余地**: classify ステージの先頭で、各 snippet について「旧 classified の場所に
+あるファイルがあれば削除してから新しい場所に書く」処理を追加する。
+
+**いつ対処するか**: 次に classify ステージを触るタイミング。または `--rebuild` の
+利用頻度が増えたら。
+
+---
+
 ## 対処済み（履歴）
+
+- **Important #1: AnthropicProvider が `response_format="json"` を無視** — 2026-04-24 修正。システムプロンプトに JSON 強制指示を追記するフォールバックを追加。Gemini は `response_mime_type` で native 対応済み。
+- **Important #2: `assert fm is not None` の本番利用** — 2026-04-24 修正。3 箇所（classify.py / cluster.py / compile.py）を `if fm is None: raise RuntimeError(...)` に置換。`-O` フラグ対策。
+
 
 - **Important #1: AnthropicProvider が `response_format="json"` を無視** — 2026-04-24 修正。システムプロンプトに JSON 強制指示を追記するフォールバックを追加。Gemini は `response_mime_type` で native 対応済み。
 - **Important #2: `assert fm is not None` の本番利用** — 2026-04-24 修正。3 箇所（classify.py / cluster.py / compile.py）を `if fm is None: raise RuntimeError(...)` に置換。`-O` フラグ対策。

@@ -2,15 +2,112 @@ categories:
   - id: 01-principles
     label: 原理原則
     description: ルール・ステージ・ブキ非依存の普遍理論
+    fixed_levels: []
+
   - id: 02-rule-stage
     label: ルール×ステージ
     description: ルール×ステージ固有の定石
+    fixed_levels:
+      - name: ルール
+        mode: enumerated
+        values:
+          - {id: area, label: ガチエリア}
+          - {id: yagura, label: ガチヤグラ}
+          - {id: hoko, label: ガチホコ}
+          - {id: asari, label: ガチアサリ}
+          - {id: nawabari, label: ナワバリ}
+      - name: ステージ
+        mode: enumerated
+        values:
+          - {id: zatou, label: ザトウマーケット}
+          - {id: kinme, label: キンメダイ美術館}
+          - {id: masaba, label: マサバ海峡大橋}
+          - {id: yagara, label: ヤガラ市場}
+          - {id: namero, label: ナメロウ金属}
+          - {id: ohyo, label: オヒョウ海運}
+          - {id: sumeshi, label: スメーシーワールド}
+          - {id: gonzui, label: ゴンズイ地区}
+          - {id: takaashi, label: タカアシ経済特区}
+          - {id: kombu, label: コンブトラック}
+          - {id: amabi, label: 海女美術大学}
+          - {id: bangaitei, label: バンカラ街}
+          - {id: hirame, label: ヒラメが丘団地}
+          - {id: baigai, label: バイガイ亭}
+
   - id: 03-weapon-role
     label: ブキ・役割
     description: ブキ／サブ／スペシャル／ロール固有のノウハウ（ギアパワー構成含む）
+    fixed_levels:
+      - name: ブキ種別
+        mode: enumerated
+        values:
+          - {id: shooter, label: シューター}
+          - {id: roller, label: ローラー}
+          - {id: charger, label: チャージャー}
+          - {id: slosher, label: スロッシャー}
+          - {id: splatling, label: スピナー}
+          - {id: dualies, label: マニューバー}
+          - {id: brella, label: シェルター}
+          - {id: blaster, label: ブラスター}
+          - {id: brush, label: フデ}
+          - {id: stringer, label: ストリンガー}
+          - {id: splatana, label: ワイパー}
+      - name: 個別ブキ
+        mode: enumerated
+        values_by_parent:
+          shooter:
+            - {id: splash-shooter, label: スプラシューター}
+            - {id: bold-marker, label: ボールドマーカー}
+            - {id: prime-shooter, label: プライムシューター}
+            - {id: splattershot-jr, label: わかばシューター}
+            - {id: splash-o-matic, label: シャープマーカー}
+            - {id: 52-gal, label: ".52ガロン"}
+            - {id: kelvin-525, label: ケルビン525}
+          roller:
+            - {id: splat-roller, label: スプラローラー}
+            - {id: dynamo-roller, label: ダイナモローラー}
+            - {id: carbon-roller, label: カーボンローラー}
+            - {id: flingza-roller, label: ヴァリアブルローラー}
+          charger:
+            - {id: splat-charger, label: スプラチャージャー}
+            - {id: e-liter-4k, label: リッター4K}
+            - {id: squiffer, label: スクイックリン}
+          slosher:
+            - {id: slosher, label: バケットスロッシャー}
+            - {id: tri-slosher, label: ヒッセン}
+            - {id: bloblobber, label: オーバーフロッシャー}
+          splatling:
+            - {id: splatling, label: スプラスピナー}
+            - {id: hydra-splatling, label: ハイドラント}
+            - {id: mini-splatling, label: バレルスピナー}
+          dualies:
+            - {id: dapple-dualies, label: スパッタリー}
+            - {id: splat-dualies, label: スプラマニューバー}
+            - {id: dualie-squelchers, label: デュアルスイーパー}
+          brella:
+            - {id: splat-brella, label: パラシェルター}
+            - {id: tenta-brella, label: キャンピングシェルター}
+            - {id: undercover-brella, label: スパイガジェット}
+          blaster:
+            - {id: blaster, label: ホットブラスター}
+            - {id: range-blaster, label: ロングブラスター}
+            - {id: rapid-blaster, label: ラピッドブラスター}
+          brush:
+            - {id: inkbrush, label: パブロ}
+            - {id: octobrush, label: ホクサイ}
+          stringer:
+            - {id: tri-stringer, label: トライストリンガー}
+            - {id: reef-lux-450, label: フルイドV}
+          splatana:
+            - {id: splatana-stamper, label: ドライブワイパー}
+            - {id: splatana-wiper, label: ジムワイパー}
+
   - id: 04-stepup
     label: ステップアップガイド
     description: XP1800-2400 向けに ①②③ から抽出したエッセンス集
+    fixed_levels: []
+
   - id: 05-glossary
     label: 用語集
     description: スプラトゥーン用語／FPS・TPS 用語
+    fixed_levels: []

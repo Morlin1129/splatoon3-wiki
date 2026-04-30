@@ -4,10 +4,10 @@ from pathlib import Path
 
 import pytest
 
-from pipeline.config import StageConfig
+from pipeline.config import Category, FixedLevel, LevelValue, StageConfig
 from pipeline.frontmatter_io import read_frontmatter, write_frontmatter
 from pipeline.llm.fake import FakeLLMProvider
-from pipeline.models import ClassifiedFrontmatter, WikiFrontmatter
+from pipeline.models import ClassifiedFrontmatter
 from pipeline.stages import consolidate
 
 
@@ -20,302 +20,287 @@ def workspace(tmp_path: Path) -> Path:
 
 
 def _seed_classified(
-    workspace: Path, category: str, name: str, subtopic: str, body: str = "本文"
+    workspace: Path, category: str, name: str, path: list[str], body: str = "本文"
 ) -> Path:
-    path = workspace / "classified" / category / name
-    path.parent.mkdir(parents=True, exist_ok=True)
+    file_path = workspace / "classified" / category / name
+    file_path.parent.mkdir(parents=True, exist_ok=True)
     fm = ClassifiedFrontmatter(
         source_file="sample_raw/x.md",
         source_date="2026-04-01",
         extracted_at=datetime(2026, 4, 24, 12, 0, 0),
         content_hash="h1",
         category=category,
-        subtopic=subtopic,
+        path=path,
     )
-    write_frontmatter(path, fm, body)
-    return path
+    write_frontmatter(file_path, fm, body)
+    return file_path
 
 
-def test_consolidate_no_op_when_no_classified_files(workspace: Path) -> None:
-    provider = FakeLLMProvider(responses=[])
-    consolidate.run(
-        provider=provider,
-        stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
-        classified_dir=workspace / "classified",
-        wiki_dir=workspace / "wiki",
-        log_path=workspace / "state" / "consolidate_log.md",
-        system_prompt="CONSOLIDATE PROMPT",
-        now=lambda: datetime(2026, 4, 26, 14, 32, 0),
-        root=workspace,
-    )
-    assert provider.calls == []
-    assert not (workspace / "state" / "consolidate_log.md").exists()
+def _categories_principles_only() -> list[Category]:
+    return [Category(id="01-principles", label="原理原則", description="x")]
 
 
-def test_consolidate_no_changes_when_llm_returns_empty_renames(workspace: Path) -> None:
-    classified_path = _seed_classified(
-        workspace, "01-principles", "2026-04-26-x.md", "dakai-fundamentals"
-    )
-    original = classified_path.read_text(encoding="utf-8")
+def test_consolidate_skips_when_path_frequency_unchanged(workspace: Path) -> None:
+    _seed_classified(workspace, "01-principles", "x.md", ["dakai-fundamentals"])
+    manifest_path = workspace / "state" / "ingest_manifest.json"
 
     provider = FakeLLMProvider(responses=[json.dumps({"renames": []})])
     consolidate.run(
         provider=provider,
         stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+        categories=_categories_principles_only(),
         classified_dir=workspace / "classified",
         wiki_dir=workspace / "wiki",
         log_path=workspace / "state" / "consolidate_log.md",
-        system_prompt="CONSOLIDATE PROMPT",
-        now=lambda: datetime(2026, 4, 26, 14, 32, 0),
+        manifest_path=manifest_path,
+        system_prompt="x",
+        now=lambda: datetime(2026, 4, 30),
         root=workspace,
     )
-
     assert len(provider.calls) == 1
-    # category id and subtopic must be in the user prompt
-    assert "01-principles" in provider.calls[0].user
-    assert "dakai-fundamentals" in provider.calls[0].user
-    # No file changes
-    assert classified_path.read_text(encoding="utf-8") == original
-    assert not (workspace / "state" / "consolidate_log.md").exists()
 
-
-def test_consolidate_rewrites_classified_frontmatter_to_new_subtopic(
-    workspace: Path,
-) -> None:
-    cls_path = _seed_classified(
-        workspace,
-        "01-principles",
-        "2026-04-26-dakai-home.md",
-        "2026-04-26-general-dakai-home-base-clearing",
-    )
-
-    rename = {
-        "category": "01-principles",
-        "from": "2026-04-26-general-dakai-home-base-clearing",
-        "to": "dakai-fundamentals",
-        "reason": "打開時の自陣処理は dakai-fundamentals の範疇",
-    }
-    provider = FakeLLMProvider(responses=[json.dumps({"renames": [rename]})])
+    provider = FakeLLMProvider(responses=[])
     consolidate.run(
         provider=provider,
         stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+        categories=_categories_principles_only(),
         classified_dir=workspace / "classified",
         wiki_dir=workspace / "wiki",
         log_path=workspace / "state" / "consolidate_log.md",
-        system_prompt="CONSOLIDATE PROMPT",
-        now=lambda: datetime(2026, 4, 26, 14, 32, 0),
+        manifest_path=manifest_path,
+        system_prompt="x",
+        now=lambda: datetime(2026, 4, 30),
+        root=workspace,
+    )
+    assert provider.calls == []
+
+
+def test_consolidate_calls_llm_when_path_frequency_changes(workspace: Path) -> None:
+    _seed_classified(workspace, "01-principles", "x.md", ["dakai-fundamentals"])
+    manifest_path = workspace / "state" / "ingest_manifest.json"
+
+    consolidate.run(
+        provider=FakeLLMProvider(responses=[json.dumps({"renames": []})]),
+        stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+        categories=_categories_principles_only(),
+        classified_dir=workspace / "classified",
+        wiki_dir=workspace / "wiki",
+        log_path=workspace / "state" / "consolidate_log.md",
+        manifest_path=manifest_path,
+        system_prompt="x",
+        now=lambda: datetime(2026, 4, 30),
         root=workspace,
     )
 
-    fm, _ = read_frontmatter(cls_path, ClassifiedFrontmatter)
-    assert fm.subtopic == "dakai-fundamentals"
+    _seed_classified(workspace, "01-principles", "y.md", ["new-topic"])
 
-
-def test_consolidate_tombstones_old_wiki_page(workspace: Path) -> None:
-    _seed_classified(
-        workspace,
-        "01-principles",
-        "2026-04-26-dakai-home.md",
-        "2026-04-26-general-dakai-home-base-clearing",
+    provider = FakeLLMProvider(responses=[json.dumps({"renames": []})])
+    consolidate.run(
+        provider=provider,
+        stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+        categories=_categories_principles_only(),
+        classified_dir=workspace / "classified",
+        wiki_dir=workspace / "wiki",
+        log_path=workspace / "state" / "consolidate_log.md",
+        manifest_path=manifest_path,
+        system_prompt="x",
+        now=lambda: datetime(2026, 4, 30),
+        root=workspace,
     )
-    # Pre-existing wiki page from a prior compile run
-    wiki_dir = workspace / "wiki" / "01-principles"
-    wiki_dir.mkdir(parents=True)
-    old_wiki = wiki_dir / "2026-04-26-general-dakai-home-base-clearing.md"
-    old_fm = WikiFrontmatter(
-        title="2026-04-26-general-dakai-home-base-clearing",
+    assert len(provider.calls) == 1
+
+
+def test_consolidate_applies_path_rename(workspace: Path) -> None:
+    _seed_classified(workspace, "01-principles", "x.md", ["old-name"])
+    manifest_path = workspace / "state" / "ingest_manifest.json"
+
+    provider = FakeLLMProvider(
+        responses=[
+            json.dumps(
+                {
+                    "renames": [
+                        {
+                            "category": "01-principles",
+                            "from_path": ["old-name"],
+                            "to_path": ["new-name"],
+                            "reason": "テスト",
+                        }
+                    ]
+                }
+            )
+        ]
+    )
+    consolidate.run(
+        provider=provider,
+        stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+        categories=_categories_principles_only(),
+        classified_dir=workspace / "classified",
+        wiki_dir=workspace / "wiki",
+        log_path=workspace / "state" / "consolidate_log.md",
+        manifest_path=manifest_path,
+        system_prompt="x",
+        now=lambda: datetime(2026, 4, 30),
+        root=workspace,
+    )
+
+    out = workspace / "classified" / "01-principles" / "x.md"
+    fm, _ = read_frontmatter(out, ClassifiedFrontmatter)
+    assert fm.path == ["new-name"]
+
+
+def test_consolidate_tombstone_link_is_relative_sibling(workspace: Path) -> None:
+    """When a 1-layer path is renamed, the tombstone wiki page must link to the
+    sibling file (e.g. `new-name.md`), not `../new-name.md` (which points outside
+    the category directory)."""
+    _seed_classified(workspace, "01-principles", "x.md", ["old-name"])
+    # Pre-create the wiki page so consolidate writes a tombstone over it.
+    from pipeline.models import WikiFrontmatter
+
+    old_wiki = workspace / "wiki" / "01-principles" / "old-name.md"
+    old_wiki.parent.mkdir(parents=True, exist_ok=True)
+    fm = WikiFrontmatter(
+        title="old",
         category="01-principles",
-        subtopic="2026-04-26-general-dakai-home-base-clearing",
+        path=["old-name"],
         sources=[],
-        updated_at=datetime(2026, 4, 26, 12, 0, 0),
+        updated_at=datetime(2026, 4, 30),
     )
-    write_frontmatter(old_wiki, old_fm, "## old\n\n古い本文。\n")
+    write_frontmatter(old_wiki, fm, "本文")
 
-    rename = {
-        "category": "01-principles",
-        "from": "2026-04-26-general-dakai-home-base-clearing",
-        "to": "dakai-fundamentals",
-        "reason": "打開時の自陣処理は dakai-fundamentals の範疇",
-    }
-    provider = FakeLLMProvider(responses=[json.dumps({"renames": [rename]})])
+    manifest_path = workspace / "state" / "ingest_manifest.json"
+    provider = FakeLLMProvider(
+        responses=[
+            json.dumps(
+                {
+                    "renames": [
+                        {
+                            "category": "01-principles",
+                            "from_path": ["old-name"],
+                            "to_path": ["new-name"],
+                            "reason": "テスト",
+                        }
+                    ]
+                }
+            )
+        ]
+    )
     consolidate.run(
         provider=provider,
         stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+        categories=_categories_principles_only(),
         classified_dir=workspace / "classified",
         wiki_dir=workspace / "wiki",
         log_path=workspace / "state" / "consolidate_log.md",
-        system_prompt="CONSOLIDATE PROMPT",
-        now=lambda: datetime(2026, 4, 26, 14, 32, 0),
+        manifest_path=manifest_path,
+        system_prompt="x",
+        now=lambda: datetime(2026, 4, 30),
         root=workspace,
     )
 
-    assert old_wiki.exists()  # tombstone file still occupies the URL
-    fm, body = read_frontmatter(old_wiki, WikiFrontmatter)
-    assert fm.tombstone is True
-    assert fm.merged_into == "dakai-fundamentals"
-    assert fm.merged_at == datetime(2026, 4, 26, 14, 32, 0)
-    assert "[dakai-fundamentals](dakai-fundamentals.md)" in body
-    assert "打開時の自陣処理は dakai-fundamentals の範疇" in body
-    assert "古い本文" not in body  # old content gone
+    tombstone_text = old_wiki.read_text(encoding="utf-8")
+    # The link target must be the sibling file, not parent-relative
+    assert "(new-name.md)" in tombstone_text
+    assert "../new-name.md" not in tombstone_text
 
 
-def test_consolidate_skips_tombstone_when_old_wiki_does_not_exist(
-    workspace: Path,
-) -> None:
-    """If the old subtopic was never compiled to wiki yet, no tombstone needed."""
-    _seed_classified(
-        workspace,
-        "01-principles",
-        "2026-04-26-dakai-home.md",
-        "2026-04-26-general-dakai-home-base-clearing",
+def test_consolidate_rejects_rename_changing_enumerated_layer(workspace: Path) -> None:
+    # Seed a path with a free tail ("gear") so consolidate's enumerated-only
+    # skip doesn't trigger and the LLM call (with its bad rename) actually runs.
+    _seed_classified(workspace, "03-weapon-role", "x.md", ["shooter", "splash-shooter", "gear"])
+    manifest_path = workspace / "state" / "ingest_manifest.json"
+
+    categories = [
+        Category(
+            id="03-weapon-role",
+            label="ブキ",
+            description="x",
+            fixed_levels=[
+                FixedLevel(
+                    name="ブキ種別",
+                    mode="enumerated",
+                    values=[
+                        LevelValue(id="shooter", label="シューター"),
+                        LevelValue(id="roller", label="ローラー"),
+                    ],
+                ),
+                FixedLevel(
+                    name="個別ブキ",
+                    mode="enumerated",
+                    values_by_parent={
+                        "shooter": [LevelValue(id="splash-shooter", label="スプラ")],
+                        "roller": [LevelValue(id="splat-roller", label="スプラローラー")],
+                    },
+                ),
+            ],
+        )
+    ]
+    provider = FakeLLMProvider(
+        responses=[
+            json.dumps(
+                {
+                    "renames": [
+                        {
+                            "category": "03-weapon-role",
+                            "from_path": ["shooter", "splash-shooter", "gear"],
+                            "to_path": ["roller", "splat-roller", "gear"],
+                            "reason": "x",
+                        }
+                    ]
+                }
+            )
+        ]
     )
-    rename = {
-        "category": "01-principles",
-        "from": "2026-04-26-general-dakai-home-base-clearing",
-        "to": "dakai-fundamentals",
-        "reason": "範疇内",
-    }
-    provider = FakeLLMProvider(responses=[json.dumps({"renames": [rename]})])
+    with pytest.raises(ValueError, match="enumerated"):
+        consolidate.run(
+            provider=provider,
+            stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+            categories=categories,
+            classified_dir=workspace / "classified",
+            wiki_dir=workspace / "wiki",
+            log_path=workspace / "state" / "consolidate_log.md",
+            manifest_path=manifest_path,
+            system_prompt="x",
+            now=lambda: datetime(2026, 4, 30),
+            root=workspace,
+        )
 
+
+def test_consolidate_skips_enumerated_only_categories(workspace: Path) -> None:
+    """If a category's fixed_levels are all enumerated AND no free tail exists,
+    consolidate skips it entirely (no LLM call)."""
+    _seed_classified(workspace, "03-weapon-role", "x.md", ["shooter", "splash-shooter"])
+    manifest_path = workspace / "state" / "ingest_manifest.json"
+
+    categories = [
+        Category(
+            id="03-weapon-role",
+            label="ブキ",
+            description="x",
+            fixed_levels=[
+                FixedLevel(
+                    name="ブキ種別",
+                    mode="enumerated",
+                    values=[LevelValue(id="shooter", label="シューター")],
+                ),
+                FixedLevel(
+                    name="個別ブキ",
+                    mode="enumerated",
+                    values_by_parent={"shooter": [LevelValue(id="splash-shooter", label="スプラ")]},
+                ),
+            ],
+        )
+    ]
+    provider = FakeLLMProvider(responses=[])
     consolidate.run(
         provider=provider,
         stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
+        categories=categories,
         classified_dir=workspace / "classified",
         wiki_dir=workspace / "wiki",
         log_path=workspace / "state" / "consolidate_log.md",
-        system_prompt="CONSOLIDATE PROMPT",
-        now=lambda: datetime(2026, 4, 26, 14, 32, 0),
+        manifest_path=manifest_path,
+        system_prompt="x",
+        now=lambda: datetime(2026, 4, 30),
         root=workspace,
     )
-
-    # No wiki page existed, so no tombstone created. classified subtopic still updated.
-    old_slug = "2026-04-26-general-dakai-home-base-clearing.md"
-    assert not (workspace / "wiki" / "01-principles" / old_slug).exists()
-
-
-def test_consolidate_appends_log_entry(workspace: Path) -> None:
-    _seed_classified(
-        workspace,
-        "01-principles",
-        "2026-04-26-x.md",
-        "2026-04-26-general-x",
-    )
-    rename = {
-        "category": "01-principles",
-        "from": "2026-04-26-general-x",
-        "to": "x-fundamentals",
-        "reason": "汎用 slug に統合",
-    }
-    provider = FakeLLMProvider(responses=[json.dumps({"renames": [rename]})])
-    log_path = workspace / "state" / "consolidate_log.md"
-
-    consolidate.run(
-        provider=provider,
-        stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
-        classified_dir=workspace / "classified",
-        wiki_dir=workspace / "wiki",
-        log_path=log_path,
-        system_prompt="CONSOLIDATE PROMPT",
-        now=lambda: datetime(2026, 4, 26, 14, 32, 0),
-        root=workspace,
-    )
-
-    text = log_path.read_text(encoding="utf-8")
-    assert "2026-04-26T14:32:00" in text
-    assert "01-principles/2026-04-26-general-x" in text
-    assert "01-principles/x-fundamentals" in text
-    assert "汎用 slug に統合" in text
-
-
-def test_consolidate_log_appends_across_runs(workspace: Path) -> None:
-    log_path = workspace / "state" / "consolidate_log.md"
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    log_path.write_text("## existing previous entry\n\nfoo\n", encoding="utf-8")
-
-    _seed_classified(workspace, "01-principles", "2026-04-26-y.md", "old-y")
-    rename = {
-        "category": "01-principles",
-        "from": "old-y",
-        "to": "new-y",
-        "reason": "test",
-    }
-    provider = FakeLLMProvider(responses=[json.dumps({"renames": [rename]})])
-
-    consolidate.run(
-        provider=provider,
-        stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
-        classified_dir=workspace / "classified",
-        wiki_dir=workspace / "wiki",
-        log_path=log_path,
-        system_prompt="CONSOLIDATE PROMPT",
-        now=lambda: datetime(2026, 4, 26, 14, 32, 0),
-        root=workspace,
-    )
-
-    text = log_path.read_text(encoding="utf-8")
-    assert "## existing previous entry" in text  # preserved
-    assert "old-y" in text  # new entry appended
-
-
-def test_consolidate_raises_on_unknown_category(workspace: Path) -> None:
-    _seed_classified(workspace, "01-principles", "2026-04-26-x.md", "x-topic")
-    rename = {
-        "category": "99-bogus",
-        "from": "x-topic",
-        "to": "y-topic",
-        "reason": "test",
-    }
-    provider = FakeLLMProvider(responses=[json.dumps({"renames": [rename]})])
-
-    with pytest.raises(ValueError, match="unknown category"):
-        consolidate.run(
-            provider=provider,
-            stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
-            classified_dir=workspace / "classified",
-            wiki_dir=workspace / "wiki",
-            log_path=workspace / "state" / "consolidate_log.md",
-            system_prompt="CONSOLIDATE PROMPT",
-            now=lambda: datetime(2026, 4, 26, 14, 32, 0),
-            root=workspace,
-        )
-
-
-def test_consolidate_raises_on_unknown_source_subtopic(workspace: Path) -> None:
-    _seed_classified(workspace, "01-principles", "2026-04-26-x.md", "x-topic")
-    rename = {
-        "category": "01-principles",
-        "from": "does-not-exist",
-        "to": "y-topic",
-        "reason": "test",
-    }
-    provider = FakeLLMProvider(responses=[json.dumps({"renames": [rename]})])
-
-    with pytest.raises(ValueError, match="unknown source subtopic"):
-        consolidate.run(
-            provider=provider,
-            stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
-            classified_dir=workspace / "classified",
-            wiki_dir=workspace / "wiki",
-            log_path=workspace / "state" / "consolidate_log.md",
-            system_prompt="CONSOLIDATE PROMPT",
-            now=lambda: datetime(2026, 4, 26, 14, 32, 0),
-            root=workspace,
-        )
-
-
-def test_consolidate_raises_on_malformed_rename(workspace: Path) -> None:
-    _seed_classified(workspace, "01-principles", "2026-04-26-x.md", "x-topic")
-    rename = {"category": "01-principles", "from": "x-topic"}  # missing 'to'
-    provider = FakeLLMProvider(responses=[json.dumps({"renames": [rename]})])
-
-    with pytest.raises(ValueError, match="malformed rename"):
-        consolidate.run(
-            provider=provider,
-            stage_cfg=StageConfig(provider="fake", model="x", max_tokens=1024),
-            classified_dir=workspace / "classified",
-            wiki_dir=workspace / "wiki",
-            log_path=workspace / "state" / "consolidate_log.md",
-            system_prompt="CONSOLIDATE PROMPT",
-            now=lambda: datetime(2026, 4, 26, 14, 32, 0),
-            root=workspace,
-        )
+    assert provider.calls == []

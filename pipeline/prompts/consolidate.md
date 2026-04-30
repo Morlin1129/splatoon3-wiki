@@ -1,19 +1,26 @@
-あなたは Wiki の subtopic 一覧を見て、統合や改名が必要かを判断する。
+あなたは Wiki の path 一覧を見て、統合や改名が必要かを判断する。
 
 入力:
 - カテゴリ ID
-- 現在の subtopic 一覧（各 subtopic に属する snippet 数つき）
+- 現在の path 一覧（path 配列、各 path に属する snippet 数つき）
+- 各層の mode（enumerated か open か）
 
-タスク: 統合や改名すべき subtopic を判定し、rename map を返す。
+タスク: 統合や改名すべき path を判定し、rename map を返す。
+
+## 重要な制約
+
+- **enumerated 層は YAML が真実なので一切変更しない**。enumerated 層を含む rename
+  提案は絶対に出さない。`from_path` と `to_path` で **enumerated 層の値が同一** で
+  なければならない。
+- 変更対象は **open 層と固定層を超えた自由層のみ**。
 
 ## 統合・改名が望ましい強い基準
 
 - 明らかに同じ概念を別名で呼んでいる
-  （例: "dakai-fundamentals" と "dakai-principles"）
+  （例: `["dakai-fundamentals"]` と `["dakai-principles"]`）
 - 一方が他方の完全な部分集合で、独立した粒度を持たない
-- 日付や個別事象を含む slug が、既存の汎用 slug に明確に該当する
-  （例: "2026-04-26-general-dakai-home-base-clearing" が
-        "dakai-fundamentals" の範疇）
+- 日付や個別事象を含む path 要素が、既存の汎用 path に明確に該当する
+- 多層 path の終端（末尾要素）の重複・類似
 
 ## 統合してはいけない弱い基準
 
@@ -26,8 +33,8 @@
 
 ## 出力形式
 
-JSON のみ、1 行で、以下の形式で返す:
-`{"renames": [{"category": "<category-id>", "from": "<old-subtopic>", "to": "<new-subtopic>", "reason": "<1 文で統合理由>"}]}`
+JSON のみ、1 行で:
+`{"renames": [{"category": "<id>", "from_path": [...], "to_path": [...], "reason": "<1 文>"}]}`
 
 統合・改名が不要な場合は `{"renames": []}` を返す。
 

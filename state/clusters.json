@@ -1,53 +1,51 @@
 {
-  "01-principles/enemy-respawn-prediction": [
+  "01-principles/special-usage/zoning-and-displacement": [
+    "classified/01-principles/2026-04-05-booyah-bomb-placement-strategy.md"
+  ],
+  "01-principles/situational-awareness/respawn-timing-prediction": [
     "classified/01-principles/2026-04-05-enemy-respawn-tracking.md"
   ],
-  "01-principles/engagement-mode-switching": [
+  "01-principles/sub-weapon-tactics/splash-shield-defensive-positioning": [
+    "classified/01-principles/2026-04-05-splash-shield-directional-cover.md"
+  ],
+  "01-principles/fundamentals/engagement-mode-switching": [
     "classified/01-principles/2026-04-05-switching-combat-modes.md",
     "classified/01-principles/2026-04-21-fluid-roles-concept.md"
   ],
-  "01-principles/peeking-and-clearing": [
+  "01-principles/special-usage/energy-stand-deployment-and-gear": [
+    "classified/01-principles/2026-04-05-tacticooler-positioning-and-gear.md"
+  ],
+  "01-principles/fundamentals/cover-usage-and-clearing": [
     "classified/01-principles/2026-04-05-using-cover-and-angles.md"
   ],
-  "01-principles/dakai-fundamentals": [
+  "01-principles/fundamentals/dakai-principles": [
     "classified/01-principles/2026-04-21-dakai-principles-and-routes.md",
     "classified/01-principles/2026-04-21-dakai-support-role.md",
     "classified/01-principles/2026-04-26-general-dakai-home-base-clearing.md"
   ],
-  "01-principles/osae-fundamentals": [
-    "classified/01-principles/2026-04-26-general-osae-waiting-actions.md"
+  "01-principles/fundamentals/skirmisher-role-fundamentals": [
+    "classified/01-principles/2026-04-21-role-skirmisher-definition.md"
   ],
-  "01-principles/frontline-fundamentals": [
+  "01-principles/fundamentals/slayer-role-fundamentals": [
+    "classified/01-principles/2026-04-21-role-slayer-definition.md"
+  ],
+  "01-principles/fundamentals/solidifying-principles": [
+    "classified/01-principles/2026-04-26-general-osae-waiting-actions.md",
     "classified/01-principles/2026-04-26-general-pushing-frontline-priority.md"
   ],
-  "02-rule-stage/amabi-right-high-suppression": [
+  "02-rule-stage/area/amabi/right-high-ground-control": [
     "classified/02-rule-stage/2026-04-05-amabi-right-high-suppression.md"
   ],
-  "02-rule-stage/baigai-area-left-drop-visibility": [
+  "02-rule-stage/area/baigai/left-side-approach-visibility": [
     "classified/02-rule-stage/2026-04-26-baigai-area-left-drop-visibility.md"
   ],
-  "02-rule-stage/kinme-area-left-side-control": [
+  "02-rule-stage/area/kinme/left-side-control": [
     "classified/02-rule-stage/2026-04-26-kinme-area-left-side-control.md"
   ],
-  "02-rule-stage/kinme-area-right-drop-maintenance": [
+  "02-rule-stage/area/kinme/right-side-approach": [
     "classified/02-rule-stage/2026-04-26-kinme-area-right-drop-maintenance.md"
   ],
-  "03-weapon-role/booyah-bomb-usage": [
-    "classified/03-weapon-role/2026-04-05-booyah-bomb-placement-strategy.md"
-  ],
-  "03-weapon-role/splash-shield-usage": [
-    "classified/03-weapon-role/2026-04-05-splash-shield-directional-cover.md"
-  ],
-  "03-weapon-role/tactics-cooler-usage": [
-    "classified/03-weapon-role/2026-04-05-tacticooler-positioning-and-gear.md"
-  ],
-  "03-weapon-role/skirmisher-role-theory": [
-    "classified/03-weapon-role/2026-04-21-role-skirmisher-definition.md"
-  ],
-  "03-weapon-role/slayer-role-theory": [
-    "classified/03-weapon-role/2026-04-21-role-slayer-definition.md"
-  ],
-  "03-weapon-role/kelvin-barrel-range-management": [
+  "03-weapon-role/shooter/kelvin-525/spacing-and-range-management": [
     "classified/03-weapon-role/2026-04-26-weapon-range-management-kelvin-barrel.md"
   ]
 }

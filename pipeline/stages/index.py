@@ -12,13 +12,6 @@ _SUMMARY_MAX_CHARS = 120
 
 
 def _extract_summary(body: str) -> str:
-    """Return the first sentence of the first non-heading paragraph.
-
-    Falls back to "(本文なし)" if no eligible paragraph is found.
-    Sentences end on a Japanese full stop `。` or an ASCII `.` followed by
-    whitespace or end-of-string. The result is truncated to 120 Unicode
-    code points with "…" appended when the source sentence is longer.
-    """
     lines = body.splitlines()
     start = 0
     for i, line in enumerate(lines):
@@ -54,33 +47,76 @@ def _extract_summary(body: str) -> str:
     return sentence
 
 
-def _list_pages(cat_dir: Path) -> list[Path]:
-    if not cat_dir.is_dir():
-        return []
-    pages: list[Path] = []
-    for p in sorted(cat_dir.glob("*.md")):
-        if p.name == "README.md":
-            continue
-        fm, _ = read_frontmatter(p, WikiFrontmatter)
-        if fm is not None and fm.tombstone:
-            continue
-        pages.append(p)
-    return pages
+def _is_excluded(p: Path) -> bool:
+    """README.md is excluded; tombstone leaves are excluded."""
+    if p.name == "README.md":
+        return True
+    fm, _ = read_frontmatter(p, WikiFrontmatter, require=False)
+    if fm is not None and fm.tombstone:
+        return True
+    return False
 
 
-def _write_category_readme(cat: Category, cat_dir: Path, pages: list[Path]) -> None:
-    lines = [f"# {cat.id} — {cat.label}", "", cat.description, "", "## ページ一覧", ""]
-    if not pages:
-        lines.append("(まだページがありません)")
+def _list_subdirectories(d: Path) -> list[Path]:
+    return sorted([p for p in d.iterdir() if p.is_dir()])
+
+
+def _list_leaf_pages(d: Path) -> list[Path]:
+    return sorted([p for p in d.glob("*.md") if not _is_excluded(p)])
+
+
+def _write_intermediate_readme(dir_path: Path, breadcrumb: list[str], category_label: str) -> None:
+    """Write a static index README for an intermediate node."""
+    title = breadcrumb[-1] if breadcrumb else category_label
+    crumb = " > ".join(breadcrumb) if breadcrumb else category_label
+    if breadcrumb:
+        breadcrumb_line = f"`{category_label} > {crumb}`"
     else:
-        for page_path in pages:
-            fm, body = read_frontmatter(page_path, WikiFrontmatter)
+        breadcrumb_line = f"`{category_label}`"
+    lines = [f"# {title}", "", breadcrumb_line, ""]
+
+    subdirs = _list_subdirectories(dir_path)
+    if subdirs:
+        lines.append("## サブカテゴリ")
+        lines.append("")
+        for sub in subdirs:
+            lines.append(f"- [{sub.name}/]({sub.name}/)")
+        lines.append("")
+
+    leaves = _list_leaf_pages(dir_path)
+    if leaves:
+        lines.append("## ページ")
+        lines.append("")
+        for leaf in leaves:
+            fm, body = read_frontmatter(leaf, WikiFrontmatter)
             if fm is None:
-                raise RuntimeError(f"unreachable: wiki page missing frontmatter: {page_path}")
+                continue
             summary = _extract_summary(body)
-            lines.append(f"- [{fm.title}]({page_path.name}) — {summary}")
-    cat_dir.mkdir(parents=True, exist_ok=True)
-    (cat_dir / "README.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+            lines.append(f"- [{fm.title}]({leaf.name}) — {summary}")
+        lines.append("")
+
+    if not subdirs and not leaves:
+        lines.append("(まだページがありません)")
+        lines.append("")
+
+    (dir_path / "README.md").write_text("\n".join(lines), encoding="utf-8")
+
+
+def _write_recursive(dir_path: Path, breadcrumb: list[str], category_label: str) -> None:
+    if not dir_path.is_dir():
+        return
+    _write_intermediate_readme(dir_path, breadcrumb, category_label)
+    for sub in _list_subdirectories(dir_path):
+        _write_recursive(sub, [*breadcrumb, sub.name], category_label)
+
+
+def _count_leaf_pages_recursive(dir_path: Path) -> int:
+    if not dir_path.is_dir():
+        return 0
+    count = len(_list_leaf_pages(dir_path))
+    for sub in _list_subdirectories(dir_path):
+        count += _count_leaf_pages_recursive(sub)
+    return count
 
 
 def _write_top_readme(wiki_dir: Path, categories: list[Category], counts: dict[str, int]) -> None:
@@ -100,11 +136,10 @@ def _write_top_readme(wiki_dir: Path, categories: list[Category], counts: dict[s
 
 
 def run(*, wiki_dir: Path, categories: list[Category]) -> None:
-    """Generate wiki/README.md and per-category README.md files."""
+    """Generate static README.md at every wiki tree node (top, category, intermediates)."""
     counts: dict[str, int] = {}
     for cat in categories:
         cat_dir = wiki_dir / cat.id
-        pages = _list_pages(cat_dir)
-        counts[cat.id] = len(pages)
-        _write_category_readme(cat, cat_dir, pages)
+        counts[cat.id] = _count_leaf_pages_recursive(cat_dir)
+        _write_recursive(cat_dir, [], cat.label)
     _write_top_readme(wiki_dir, categories, counts)

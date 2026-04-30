@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from pipeline.config import Category, StageConfig
+from pipeline.config import Category, FixedLevel, LevelValue, StageConfig
 from pipeline.frontmatter_io import read_frontmatter, write_frontmatter
 from pipeline.llm.fake import FakeLLMProvider
 from pipeline.models import ClassifiedFrontmatter, SnippetFrontmatter
@@ -32,32 +32,28 @@ def _seed_snippet(workspace: Path, name: str, body: str) -> Path:
     return path
 
 
-def test_classify_moves_snippet_to_classified_dir(workspace: Path) -> None:
-    snippet_path = _seed_snippet(workspace, "2026-04-01-abc.md", "右高台の制圧はリスク…")
+def test_classify_writes_path_to_classified(workspace: Path) -> None:
+    snippet_path = _seed_snippet(workspace, "2026-04-01-abc.md", "右高台の制圧…")
     manifest_path = workspace / "state" / "ingest_manifest.json"
-    manifest = Manifest(
+    Manifest(
         snippets={
             str(snippet_path.relative_to(workspace)): {
                 "source_hash": "h1",
                 "classified": False,
             }
-        },
-    )
-    manifest.save(manifest_path)
+        }
+    ).save(manifest_path)
 
     categories = [
         Category(id="01-principles", label="原理原則", description="..."),
-        Category(id="02-rule-stage", label="ルール×ステージ", description="..."),
     ]
-
     provider = FakeLLMProvider(
-        responses=[json.dumps({"category": "02-rule-stage", "subtopic": "海女美術-ガチエリア"})]
+        responses=[json.dumps({"category": "01-principles", "path": ["dakai-fundamentals"]})]
     )
-    stage_cfg = StageConfig(provider="fake", model="x", max_tokens=512)
 
     classify.run(
         provider=provider,
-        stage_cfg=stage_cfg,
+        stage_cfg=StageConfig(provider="fake", model="x", max_tokens=512),
         categories=categories,
         snippets_dir=workspace / "snippets",
         classified_dir=workspace / "classified",
@@ -66,64 +62,59 @@ def test_classify_moves_snippet_to_classified_dir(workspace: Path) -> None:
         root=workspace,
     )
 
-    out = workspace / "classified" / "02-rule-stage" / "2026-04-01-abc.md"
-    assert out.exists()
-    fm, body = read_frontmatter(out, ClassifiedFrontmatter)
-    assert fm.category == "02-rule-stage"
-    assert fm.subtopic == "海女美術-ガチエリア"
-    assert "右高台" in body
-
-    reloaded = Manifest.load(manifest_path)
-    assert reloaded.snippets[str(snippet_path.relative_to(workspace))]["classified"] is True
+    out = workspace / "classified" / "01-principles" / "2026-04-01-abc.md"
+    fm, _ = read_frontmatter(out, ClassifiedFrontmatter)
+    assert fm.path == ["dakai-fundamentals"]
 
 
-def test_classify_skips_already_classified(workspace: Path) -> None:
-    snippet_path = _seed_snippet(workspace, "2026-04-01-abc.md", "…")
+def test_classify_validates_enumerated_layer_id(workspace: Path) -> None:
+    """When category has enumerated fixed level, the path[0] must be a known id."""
+    snippet_path = _seed_snippet(workspace, "x.md", "本文")
     manifest_path = workspace / "state" / "ingest_manifest.json"
-    manifest = Manifest(
+    Manifest(
         snippets={
             str(snippet_path.relative_to(workspace)): {
                 "source_hash": "h1",
-                "classified": True,
+                "classified": False,
             }
-        },
-    )
-    manifest.save(manifest_path)
+        }
+    ).save(manifest_path)
 
-    provider = FakeLLMProvider(responses=[])
-    classify.run(
-        provider=provider,
-        stage_cfg=StageConfig(provider="fake", model="x", max_tokens=512),
-        categories=[Category(id="01-principles", label="x", description="y")],
-        snippets_dir=workspace / "snippets",
-        classified_dir=workspace / "classified",
-        manifest_path=manifest_path,
-        system_prompt="CLASSIFY PROMPT",
-        root=workspace,
-    )
-
-    assert provider.calls == []
-
-
-def test_classify_passes_existing_frontmatter_subtopics_to_prompt(workspace: Path) -> None:
-    # Pre-existing classified file with a clean (non-dated) subtopic in frontmatter
-    classified_dir = workspace / "classified" / "01-principles"
-    classified_dir.mkdir(parents=True)
-    existing_fm = ClassifiedFrontmatter(
-        source_file="sample_raw/old.md",
-        source_date="2026-04-01",
-        extracted_at=datetime(2026, 4, 24, 12, 0, 0),
-        content_hash="hold",
-        category="01-principles",
-        subtopic="dakai-fundamentals",
-    )
-    write_frontmatter(
-        classified_dir / "2026-04-01-old-snippet.md",
-        existing_fm,
-        "古いスニペット本文",
+    categories = [
+        Category(
+            id="03-weapon-role",
+            label="ブキ",
+            description="x",
+            fixed_levels=[
+                FixedLevel(
+                    name="ブキ種別",
+                    mode="enumerated",
+                    values=[LevelValue(id="shooter", label="シューター")],
+                )
+            ],
+        )
+    ]
+    provider = FakeLLMProvider(
+        responses=[json.dumps({"category": "03-weapon-role", "path": ["unknown-type"]})]
     )
 
-    snippet_path = _seed_snippet(workspace, "2026-04-26-new.md", "新しいスニペット本文")
+    with pytest.raises(ValueError, match="enumerated"):
+        classify.run(
+            provider=provider,
+            stage_cfg=StageConfig(provider="fake", model="x", max_tokens=512),
+            categories=categories,
+            snippets_dir=workspace / "snippets",
+            classified_dir=workspace / "classified",
+            manifest_path=manifest_path,
+            system_prompt="CLASSIFY PROMPT",
+            root=workspace,
+        )
+
+
+def test_classify_uses_known_paths_cache_from_manifest(workspace: Path) -> None:
+    """Existing classified paths are loaded from manifest cache, not by walking
+    the classified dir."""
+    snippet_path = _seed_snippet(workspace, "new.md", "新スニペット")
     manifest_path = workspace / "state" / "ingest_manifest.json"
     Manifest(
         snippets={
@@ -132,15 +123,18 @@ def test_classify_passes_existing_frontmatter_subtopics_to_prompt(workspace: Pat
                 "classified": False,
             }
         },
+        known_paths_cache={
+            "01-principles": [["dakai-fundamentals"], ["frontline-fundamentals"]],
+        },
     ).save(manifest_path)
 
     provider = FakeLLMProvider(
-        responses=[json.dumps({"category": "01-principles", "subtopic": "dakai-fundamentals"})]
+        responses=[json.dumps({"category": "01-principles", "path": ["dakai-fundamentals"]})]
     )
     classify.run(
         provider=provider,
         stage_cfg=StageConfig(provider="fake", model="x", max_tokens=512),
-        categories=[Category(id="01-principles", label="原理原則", description="...")],
+        categories=[Category(id="01-principles", label="原理原則", description="x")],
         snippets_dir=workspace / "snippets",
         classified_dir=workspace / "classified",
         manifest_path=manifest_path,
@@ -148,9 +142,65 @@ def test_classify_passes_existing_frontmatter_subtopics_to_prompt(workspace: Pat
         root=workspace,
     )
 
-    assert len(provider.calls) == 1
     user_prompt = provider.calls[0].user
-    # The clean frontmatter subtopic must be visible to the LLM
     assert "dakai-fundamentals" in user_prompt
-    # The dated file stem must NOT appear (that was the bug)
-    assert "2026-04-01-old-snippet" not in user_prompt
+    assert "frontline-fundamentals" in user_prompt
+
+
+def test_classify_appends_new_path_to_cache(workspace: Path) -> None:
+    snippet_path = _seed_snippet(workspace, "new.md", "本文")
+    manifest_path = workspace / "state" / "ingest_manifest.json"
+    Manifest(
+        snippets={
+            str(snippet_path.relative_to(workspace)): {
+                "source_hash": "h1",
+                "classified": False,
+            }
+        }
+    ).save(manifest_path)
+
+    provider = FakeLLMProvider(
+        responses=[json.dumps({"category": "01-principles", "path": ["new-topic"]})]
+    )
+    classify.run(
+        provider=provider,
+        stage_cfg=StageConfig(provider="fake", model="x", max_tokens=512),
+        categories=[Category(id="01-principles", label="x", description="x")],
+        snippets_dir=workspace / "snippets",
+        classified_dir=workspace / "classified",
+        manifest_path=manifest_path,
+        system_prompt="CLASSIFY PROMPT",
+        root=workspace,
+    )
+
+    reloaded = Manifest.load(manifest_path)
+    assert reloaded.known_paths_cache.get("01-principles") == [["new-topic"]]
+    assert reloaded.snippets[str(snippet_path.relative_to(workspace))]["classified_path"] == [
+        "new-topic"
+    ]
+
+
+def test_classify_skips_already_classified(workspace: Path) -> None:
+    snippet_path = _seed_snippet(workspace, "x.md", "...")
+    manifest_path = workspace / "state" / "ingest_manifest.json"
+    Manifest(
+        snippets={
+            str(snippet_path.relative_to(workspace)): {
+                "source_hash": "h1",
+                "classified": True,
+            }
+        }
+    ).save(manifest_path)
+
+    provider = FakeLLMProvider(responses=[])
+    classify.run(
+        provider=provider,
+        stage_cfg=StageConfig(provider="fake", model="x", max_tokens=512),
+        categories=[Category(id="01-principles", label="x", description="x")],
+        snippets_dir=workspace / "snippets",
+        classified_dir=workspace / "classified",
+        manifest_path=manifest_path,
+        system_prompt="CLASSIFY PROMPT",
+        root=workspace,
+    )
+    assert provider.calls == []
