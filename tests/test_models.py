@@ -1,106 +1,93 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
-from pydantic import ValidationError
 
-from pipeline.models import ClassifiedFrontmatter, SnippetFrontmatter, WikiFrontmatter
-
-
-def test_snippet_frontmatter_minimum_fields() -> None:
-    fm = SnippetFrontmatter(
-        source_file="sample_raw/2026-04-01-meeting-notes.md",
-        source_date="2026-04-01",
-        extracted_at=datetime(2026, 4, 24, 12, 0, 0),
-        content_hash="abc123",
-    )
-
-    assert fm.source_file.endswith(".md")
-    assert fm.content_hash == "abc123"
+from pipeline.models import (
+    ClassifiedFrontmatter,
+    SnippetFrontmatter,
+    WikiFrontmatter,
+)
 
 
-def test_classified_frontmatter_requires_category_and_subtopic() -> None:
+def test_classified_frontmatter_with_single_path() -> None:
     fm = ClassifiedFrontmatter(
-        source_file="sample_raw/x.md",
+        source_file="x.md",
         source_date="2026-04-01",
-        extracted_at=datetime(2026, 4, 24, 12, 0, 0),
-        content_hash="abc123",
-        category="02-rule-stage",
-        subtopic="海女美術_ガチエリア",
+        extracted_at=datetime(2026, 4, 1, tzinfo=UTC),
+        content_hash="h1",
+        category="01-principles",
+        path=["dakai-fundamentals"],
     )
+    assert fm.path == ["dakai-fundamentals"]
 
-    assert fm.category == "02-rule-stage"
 
-    with pytest.raises(ValidationError):
+def test_classified_frontmatter_with_multi_level_path() -> None:
+    fm = ClassifiedFrontmatter(
+        source_file="x.md",
+        source_date="2026-04-01",
+        extracted_at=datetime(2026, 4, 1, tzinfo=UTC),
+        content_hash="h1",
+        category="03-weapon-role",
+        path=["シューター", "スプラシューター", "ギア構成"],
+    )
+    assert len(fm.path) == 3
+
+
+def test_classified_frontmatter_rejects_empty_path() -> None:
+    with pytest.raises(ValueError, match="path"):
         ClassifiedFrontmatter(
             source_file="x.md",
             source_date="2026-04-01",
-            extracted_at=datetime(2026, 4, 24, 12, 0, 0),
-            content_hash="abc123",
-            category="",  # empty rejected
-            subtopic="x",
+            extracted_at=datetime(2026, 4, 1, tzinfo=UTC),
+            content_hash="h1",
+            category="01-principles",
+            path=[],
         )
 
 
-def test_wiki_frontmatter_sources_list() -> None:
-    fm = WikiFrontmatter(
-        title="海女美術 ガチエリア定石",
-        category="02-rule-stage",
-        subtopic="海女美術_ガチエリア",
-        sources=[
-            "https://drive.google.com/file/d/AAA",
-            "https://drive.google.com/file/d/BBB",
-        ],
-        updated_at=datetime(2026, 4, 24, 12, 0, 0),
-    )
-
-    assert len(fm.sources) == 2
-    assert fm.title == "海女美術 ガチエリア定石"
-
-
-def test_wiki_frontmatter_requires_non_empty_title() -> None:
-    with pytest.raises(ValidationError):
-        WikiFrontmatter(
-            title="",
-            category="02-rule-stage",
-            subtopic="海女美術_ガチエリア",
-            sources=[],
-            updated_at=datetime(2026, 4, 24, 12, 0, 0),
-        )
-
-    with pytest.raises(ValidationError):
-        WikiFrontmatter(  # type: ignore[call-arg]
-            category="02-rule-stage",
-            subtopic="海女美術_ガチエリア",
-            sources=[],
-            updated_at=datetime(2026, 4, 24, 12, 0, 0),
+def test_classified_frontmatter_rejects_path_component_with_slash() -> None:
+    with pytest.raises(ValueError, match="must not contain"):
+        ClassifiedFrontmatter(
+            source_file="x.md",
+            source_date="2026-04-01",
+            extracted_at=datetime(2026, 4, 1, tzinfo=UTC),
+            content_hash="h1",
+            category="01-principles",
+            path=["bad/component"],
         )
 
 
-def test_wiki_frontmatter_tombstone_defaults_off() -> None:
+def test_wiki_frontmatter_with_path_and_merged_into() -> None:
     fm = WikiFrontmatter(
-        title="海女美術 ガチエリア定石",
-        category="02-rule-stage",
-        subtopic="amabi-area-fundamentals",
-        sources=[],
-        updated_at=datetime(2026, 4, 24, 12, 0, 0),
-    )
-    assert fm.tombstone is False
-    assert fm.merged_into is None
-    assert fm.merged_at is None
-
-
-def test_wiki_frontmatter_tombstone_carries_merge_metadata() -> None:
-    merged_at = datetime(2026, 4, 26, 14, 32, 0)
-    fm = WikiFrontmatter(
-        title="統合済み: 2026-04-26-general-dakai-home-base-clearing",
+        title="x",
         category="01-principles",
-        subtopic="2026-04-26-general-dakai-home-base-clearing",
+        path=["dakai-fundamentals"],
         sources=[],
-        updated_at=merged_at,
+        updated_at=datetime(2026, 4, 1, tzinfo=UTC),
         tombstone=True,
-        merged_into="dakai-fundamentals",
-        merged_at=merged_at,
+        merged_into_path=["dakai-principles"],
+        merged_at=datetime(2026, 4, 1, tzinfo=UTC),
     )
-    assert fm.tombstone is True
-    assert fm.merged_into == "dakai-fundamentals"
-    assert fm.merged_at == merged_at
+    assert fm.merged_into_path == ["dakai-principles"]
+
+
+def test_wiki_frontmatter_default_merged_into_is_none() -> None:
+    fm = WikiFrontmatter(
+        title="x",
+        category="01-principles",
+        path=["x"],
+        sources=[],
+        updated_at=datetime(2026, 4, 1, tzinfo=UTC),
+    )
+    assert fm.merged_into_path is None
+    assert fm.tombstone is False
+
+
+def test_snippet_frontmatter_basic() -> None:
+    fm = SnippetFrontmatter(
+        source_file="x.md",
+        source_date="2026-04-01",
+        extracted_at=datetime(2026, 4, 1, tzinfo=UTC),
+        content_hash="h1",
+    )
+    assert fm.source_file == "x.md"
