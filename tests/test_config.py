@@ -198,6 +198,43 @@ categories:
         load_categories(p)
 
 
+def test_enumerated_mode_with_empty_values_is_invalid(tmp_path: Path) -> None:
+    yaml_text = """
+categories:
+  - id: x
+    label: x
+    description: x
+    fixed_levels:
+      - name: lv1
+        mode: enumerated
+        values: []
+"""
+    p = tmp_path / "categories.yaml"
+    p.write_text(yaml_text, encoding="utf-8")
+    with pytest.raises(ValueError, match="at least one value"):
+        load_categories(p)
+
+
+def test_values_by_parent_at_top_level_is_invalid(tmp_path: Path) -> None:
+    yaml_text = """
+categories:
+  - id: x
+    label: x
+    description: x
+    fixed_levels:
+      - name: lv0
+        mode: enumerated
+        values_by_parent:
+          somekey:
+            - id: a
+              label: a
+"""
+    p = tmp_path / "categories.yaml"
+    p.write_text(yaml_text, encoding="utf-8")
+    with pytest.raises(ValueError, match="top level"):
+        load_categories(p)
+
+
 def test_values_by_parent_keys_must_match_parent_ids(tmp_path: Path) -> None:
     # parent (lv0) has [shooter, roller] but values_by_parent only has [shooter]
     yaml_text = """

@@ -36,6 +36,15 @@ class FixedLevel(BaseModel):
                     f"enumerated mode level '{self.name}' cannot have both"
                     " values and values_by_parent"
                 )
+            if self.values is not None and len(self.values) == 0:
+                raise ValueError(
+                    f"enumerated mode level '{self.name}' must have at least one value"
+                )
+            if self.values_by_parent is not None and len(self.values_by_parent) == 0:
+                raise ValueError(
+                    f"enumerated mode level '{self.name}' values_by_parent"
+                    " must have at least one parent key"
+                )
         return self
 
 
