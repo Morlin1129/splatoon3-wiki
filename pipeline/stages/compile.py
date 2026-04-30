@@ -65,7 +65,7 @@ def run(
     clusters_path: Path,
     manifest_path: Path,
     system_prompt: str,
-    source_urls: dict[str, str],
+    source_urls: dict[str, str] | None = None,
     now: Callable[[], datetime] = _now_utc,
     root: Path | None = None,
 ) -> None:
@@ -99,7 +99,8 @@ def run(
         title = parsed["title"]
         body = parsed["body"]
 
-        sources = sorted(source_urls[s] for s in source_files if s in source_urls)
+        _source_urls = source_urls or {}
+        sources = sorted(_source_urls[s] for s in source_files if s in _source_urls)
         final_body = _with_sources(body, sources)
         updated_at = now()
 
