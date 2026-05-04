@@ -4,7 +4,7 @@ LLM が生成・編纂したナレッジ集。
 
 ## カテゴリ
 
-- [01-principles](01-principles/) — 原理原則 — 10 ページ
+- [01-principles](01-principles/) — 原理原則 — 12 ページ
 - [02-rule-stage](02-rule-stage/) — ルール×ステージ — 4 ページ
 - [03-weapon-role](03-weapon-role/) — ブキ・役割 — 1 ページ
 - [04-stepup](04-stepup/) — ステップアップガイド — 0 ページ
