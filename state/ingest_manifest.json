@@ -11,6 +11,10 @@
     "sample_raw/20260-04-23-discodrd-log.md": {
       "content_hash": "b3853a55f5b847c993e5df74b51ae4587538c17176f8e9040e854545fb8575a5",
       "ingested_at": "2026-04-26T01:54:16.026556+00:00"
+    },
+    "sample_raw/2026-04-28-descord-log.md": {
+      "content_hash": "fd98874d5de7094ae7d0f9f99702b579c4703e07b97465c4d476f309c63588de",
+      "ingested_at": "2026-05-04T03:09:13.919088+00:00"
     }
   },
   "snippets": {
@@ -170,6 +174,35 @@
         "fundamentals",
         "dakai-principles"
       ]
+    },
+    "snippets/2026-04-28-cutting-pie-technique.md": {
+      "source_hash": "fd98874d5de7094ae7d0f9f99702b579c4703e07b97465c4d476f309c63588de",
+      "classified": true,
+      "classified_path": [
+        "peeking-and-clearing"
+      ]
+    },
+    "snippets/2026-04-28-high-ground-containment-principle.md": {
+      "source_hash": "fd98874d5de7094ae7d0f9f99702b579c4703e07b97465c4d476f309c63588de",
+      "classified": true,
+      "classified_path": [
+        "osae-fundamentals"
+      ]
+    },
+    "snippets/2026-04-28-suppression-principles-denying-foothold.md": {
+      "source_hash": "fd98874d5de7094ae7d0f9f99702b579c4703e07b97465c4d476f309c63588de",
+      "classified": true,
+      "classified_path": [
+        "osae-fundamentals"
+      ]
+    },
+    "snippets/2026-04-28-technique-cutting-pie.md": {
+      "source_hash": "fd98874d5de7094ae7d0f9f99702b579c4703e07b97465c4d476f309c63588de",
+      "classified": true,
+      "classified_path": [
+        "peeking-and-clearing",
+        "cutting-the-pie"
+      ]
     }
   },
   "wiki": {
@@ -180,7 +213,7 @@
       "cluster_fingerprint": "cf517e3388a5d5c2fa332bb34dcdaf7872436df1831892fffa07199be7d536be"
     },
     "wiki/01-principles/peeking-and-clearing.md": {
-      "cluster_fingerprint": "89fcb6164a4344489a7b46715efe16a28f27e96b18da8a5ed0aa1a99b758b632"
+      "cluster_fingerprint": "d673cdcb80e325bbf0c0cd8409df259d91bb91b7e441aee84d532b37890715bb"
     },
     "wiki/01-principles/dakai-fundamentals.md": {
       "cluster_fingerprint": "050e723facfcb257f69281a32b04abcee87eaee73a5e2023c131154b6f098b4b"
@@ -249,7 +282,7 @@
       "cluster_fingerprint": "ad6cf360dadee6f77701f541f83bb0bd356771e8f6352df8ed1f7d5af00168ec"
     },
     "wiki/01-principles/fundamentals/solidifying-principles.md": {
-      "cluster_fingerprint": "65e29af1372f42f2fd89e1549141aa0b9c559019e9e58093eaff1b5c1ba13e27"
+      "cluster_fingerprint": "83bdf58bbe58b35ca3d8191ce669e9e6c420e5ac83458d1620ddd32e7741eeb6"
     },
     "wiki/02-rule-stage/area/amabi/right-high-ground-control.md": {
       "cluster_fingerprint": "41d02843e7d317c0c0c307d1e5f03d6890493338f8562fe8538af61e3136fb50"
@@ -265,12 +298,15 @@
     },
     "wiki/03-weapon-role/shooter/kelvin-525/spacing-and-range-management.md": {
       "cluster_fingerprint": "c28fe308bb49bc297d03adbaaa19c1b010159c46422222450d5f195951b9bc39"
+    },
+    "wiki/01-principles/peeking-and-clearing/cutting-the-pie.md": {
+      "cluster_fingerprint": "e273bf65d77fdb7c8fe691cd27d473d56528fa582c52843de72a07658d4b88e1"
     }
   },
   "consolidate": {
     "01-principles": {
-      "path_frequency_hash": "5e0864cef8274ce9f4b73a08e57b79199c56ca7c42fba1e7c5c5ac0eba888b43",
-      "last_run_at": "2026-04-30T05:27:11.363331+00:00"
+      "path_frequency_hash": "3bad3a65d73ade4cc6fd8f20b597ef91a7794a384a15b4ed7c807a72aea11d90",
+      "last_run_at": "2026-05-04T03:10:25.344381+00:00"
     },
     "02-rule-stage": {
       "path_frequency_hash": "d87ca42a5937a7cd7f3374d5c472117616fba7f77e0af087312a8cc2b37f9395",
@@ -306,6 +342,13 @@
       [
         "fundamentals",
         "solidifying-principles"
+      ],
+      [
+        "peeking-and-clearing"
+      ],
+      [
+        "peeking-and-clearing",
+        "cutting-the-pie"
       ],
       [
         "situational-awareness",

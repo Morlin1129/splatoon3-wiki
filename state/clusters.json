@@ -31,7 +31,15 @@
   ],
   "01-principles/fundamentals/solidifying-principles": [
     "classified/01-principles/2026-04-26-general-osae-waiting-actions.md",
-    "classified/01-principles/2026-04-26-general-pushing-frontline-priority.md"
+    "classified/01-principles/2026-04-26-general-pushing-frontline-priority.md",
+    "classified/01-principles/2026-04-28-high-ground-containment-principle.md",
+    "classified/01-principles/2026-04-28-suppression-principles-denying-foothold.md"
+  ],
+  "01-principles/peeking-and-clearing": [
+    "classified/01-principles/2026-04-28-cutting-pie-technique.md"
+  ],
+  "01-principles/peeking-and-clearing/cutting-the-pie": [
+    "classified/01-principles/2026-04-28-technique-cutting-pie.md"
   ],
   "02-rule-stage/area/amabi/right-high-ground-control": [
     "classified/02-rule-stage/2026-04-05-amabi-right-high-suppression.md"

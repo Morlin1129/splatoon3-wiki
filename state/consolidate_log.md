@@ -20,3 +20,11 @@
   - 理由: 日付を含む個別の事象を、既存の命名規則に合わせた汎用的な名称に変更するため。
 
 ---
+## 2026-05-04T03:10:25.344605+00:00
+
+1 件の path を統合した。
+
+- `01-principles/osae-fundamentals` → `01-principles/fundamentals/solidifying-principles`
+  - 理由: 「抑え」と「固め」は実質的に同一の概念であり、既存の fundamentals/solidifying-principles に統合して構造を整理するため。
+
+---
