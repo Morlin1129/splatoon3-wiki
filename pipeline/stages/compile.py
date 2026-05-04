@@ -100,7 +100,9 @@ def run(
         body = parsed["body"]
 
         _source_urls = source_urls or {}
-        sources = sorted(_source_urls[s] for s in source_files if s in _source_urls)
+        # Fall back to the source_file path itself when no URL mapping exists,
+        # so that wiki pages always carry an origin reference.
+        sources = sorted(_source_urls.get(s, s) for s in source_files)
         final_body = _with_sources(body, sources)
         updated_at = now()
 

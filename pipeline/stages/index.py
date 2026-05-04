@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pipeline.config import Category
+from pipeline.config import Category, FixedLevel
 from pipeline.frontmatter_io import read_frontmatter
 from pipeline.models import WikiFrontmatter
 
@@ -65,22 +65,69 @@ def _list_leaf_pages(d: Path) -> list[Path]:
     return sorted([p for p in d.glob("*.md") if not _is_excluded(p)])
 
 
-def _write_intermediate_readme(dir_path: Path, breadcrumb: list[str], category_label: str) -> None:
+def _label_at_level(level: FixedLevel, parent_id: str | None, value_id: str) -> str | None:
+    """Look up the human label for a value id at the given fixed level.
+
+    Returns None if the level is not enumerated, or the value_id isn't listed
+    in the level's values / values_by_parent (e.g. it's a free-tail component).
+    """
+    if level.values is not None:
+        for v in level.values:
+            if v.id == value_id:
+                return v.label
+        return None
+    if level.values_by_parent is not None and parent_id is not None:
+        for v in level.values_by_parent.get(parent_id, []):
+            if v.id == value_id:
+                return v.label
+        return None
+    return None
+
+
+def _resolve_label(category: Category, breadcrumb_ids: list[str], depth: int) -> str:
+    """Resolve display label for the directory at `breadcrumb_ids[depth]`.
+
+    Falls back to the raw id when the level is `open` or beyond `fixed_levels`,
+    or when the id isn't in the enumerated values.
+    """
+    value_id = breadcrumb_ids[depth]
+    if depth < len(category.fixed_levels):
+        level = category.fixed_levels[depth]
+        if level.mode == "enumerated":
+            parent_id = breadcrumb_ids[depth - 1] if depth > 0 else None
+            label = _label_at_level(level, parent_id, value_id)
+            if label is not None:
+                return label
+    return value_id
+
+
+def _resolve_breadcrumb_labels(category: Category, breadcrumb_ids: list[str]) -> list[str]:
+    return [_resolve_label(category, breadcrumb_ids, i) for i in range(len(breadcrumb_ids))]
+
+
+def _write_intermediate_readme(
+    dir_path: Path,
+    breadcrumb_ids: list[str],
+    breadcrumb_labels: list[str],
+    category: Category,
+) -> None:
     """Write a static index README for an intermediate node."""
-    title = breadcrumb[-1] if breadcrumb else category_label
-    crumb = " > ".join(breadcrumb) if breadcrumb else category_label
-    if breadcrumb:
-        breadcrumb_line = f"`{category_label} > {crumb}`"
+    title = breadcrumb_labels[-1] if breadcrumb_labels else category.label
+    if breadcrumb_labels:
+        crumb = " > ".join(breadcrumb_labels)
+        breadcrumb_line = f"`{category.label} > {crumb}`"
     else:
-        breadcrumb_line = f"`{category_label}`"
+        breadcrumb_line = f"`{category.label}`"
     lines = [f"# {title}", "", breadcrumb_line, ""]
 
     subdirs = _list_subdirectories(dir_path)
     if subdirs:
         lines.append("## サブカテゴリ")
         lines.append("")
+        sub_depth = len(breadcrumb_ids)
         for sub in subdirs:
-            lines.append(f"- [{sub.name}/]({sub.name}/)")
+            sub_label = _resolve_label(category, [*breadcrumb_ids, sub.name], sub_depth)
+            lines.append(f"- [{sub_label}]({sub.name}/)")
         lines.append("")
 
     leaves = _list_leaf_pages(dir_path)
@@ -102,12 +149,13 @@ def _write_intermediate_readme(dir_path: Path, breadcrumb: list[str], category_l
     (dir_path / "README.md").write_text("\n".join(lines), encoding="utf-8")
 
 
-def _write_recursive(dir_path: Path, breadcrumb: list[str], category_label: str) -> None:
+def _write_recursive(dir_path: Path, breadcrumb_ids: list[str], category: Category) -> None:
     if not dir_path.is_dir():
         return
-    _write_intermediate_readme(dir_path, breadcrumb, category_label)
+    breadcrumb_labels = _resolve_breadcrumb_labels(category, breadcrumb_ids)
+    _write_intermediate_readme(dir_path, breadcrumb_ids, breadcrumb_labels, category)
     for sub in _list_subdirectories(dir_path):
-        _write_recursive(sub, [*breadcrumb, sub.name], category_label)
+        _write_recursive(sub, [*breadcrumb_ids, sub.name], category)
 
 
 def _count_leaf_pages_recursive(dir_path: Path) -> int:
@@ -141,5 +189,5 @@ def run(*, wiki_dir: Path, categories: list[Category]) -> None:
     for cat in categories:
         cat_dir = wiki_dir / cat.id
         counts[cat.id] = _count_leaf_pages_recursive(cat_dir)
-        _write_recursive(cat_dir, [], cat.label)
+        _write_recursive(cat_dir, [], cat)
     _write_top_readme(wiki_dir, categories, counts)

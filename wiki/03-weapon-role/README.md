@@ -4,4 +4,4 @@
 
 ## サブカテゴリ
 
-- [shooter/](shooter/)
+- [シューター](shooter/)

@@ -1,9 +1,9 @@
-# area
+# ガチエリア
 
-`ルール×ステージ > area`
+`ルール×ステージ > ガチエリア`
 
 ## サブカテゴリ
 
-- [amabi/](amabi/)
-- [baigai/](baigai/)
-- [kinme/](kinme/)
+- [海女美術大学](amabi/)
+- [バイガイ亭](baigai/)
+- [キンメダイ美術館](kinme/)

@@ -4,12 +4,12 @@
 
 ## サブカテゴリ
 
-- [fundamentals/](fundamentals/)
-- [peeking-and-clearing/](peeking-and-clearing/)
-- [situational-awareness/](situational-awareness/)
-- [special-usage/](special-usage/)
-- [sub-weapon-tactics/](sub-weapon-tactics/)
+- [fundamentals](fundamentals/)
+- [peeking-and-clearing](peeking-and-clearing/)
+- [situational-awareness](situational-awareness/)
+- [special-usage](special-usage/)
+- [sub-weapon-tactics](sub-weapon-tactics/)
 
 ## ページ
 
-- [カッティングパイ：角の索敵とクリアリングの基本技法](peeking-and-clearing.md) — カッティングパイとは、壁の角を軸にして円弧を描くように外側へ移動しながら、パイの一切れを切り出すように少しずつ視界を広げていく技法です。
+- [生存率を高める索敵法「カッティングパイ」の技術と活用](peeking-and-clearing.md) — 「カッティングパイ」とは、壁の角や障害物の裏を確認する際に、その角を軸として円弧を描くように外側へ移動しながら、少しずつ視界を広げていく技法を指します。
