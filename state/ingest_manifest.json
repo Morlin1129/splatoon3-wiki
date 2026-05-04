@@ -205,7 +205,59 @@
       ]
     }
   },
-  "wiki": {},
+  "wiki": {
+    "wiki/01-principles/special-usage/zoning-and-displacement.md": {
+      "cluster_fingerprint": "862500f44db1e643f3bd442f5ee84e2755e29a1ec175101e42e47f43518331f6"
+    },
+    "wiki/01-principles/situational-awareness/respawn-timing-prediction.md": {
+      "cluster_fingerprint": "ae2ce41eb47ec8547c1c895c485f4dad487c00fb82ecef733042ef1460cdbe37"
+    },
+    "wiki/01-principles/sub-weapon-tactics/splash-shield-defensive-positioning.md": {
+      "cluster_fingerprint": "273e9fec2c0c8aef36c2ce51fa0c1db775f70bcc8f6bd62bbd44d9e47d15279c"
+    },
+    "wiki/01-principles/fundamentals/engagement-mode-switching.md": {
+      "cluster_fingerprint": "cf517e3388a5d5c2fa332bb34dcdaf7872436df1831892fffa07199be7d536be"
+    },
+    "wiki/01-principles/special-usage/energy-stand-deployment-and-gear.md": {
+      "cluster_fingerprint": "3b634a290255b7a17f2a4019f905202c222e80ca0d6f0a01202be487bbe07f92"
+    },
+    "wiki/01-principles/fundamentals/cover-usage-and-clearing.md": {
+      "cluster_fingerprint": "89fcb6164a4344489a7b46715efe16a28f27e96b18da8a5ed0aa1a99b758b632"
+    },
+    "wiki/01-principles/fundamentals/dakai-principles.md": {
+      "cluster_fingerprint": "050e723facfcb257f69281a32b04abcee87eaee73a5e2023c131154b6f098b4b"
+    },
+    "wiki/01-principles/fundamentals/skirmisher-role-fundamentals.md": {
+      "cluster_fingerprint": "b44e5eee48a0c0efdf95e48eced9c42e99935d895fc9d07d9a56e1251556f743"
+    },
+    "wiki/01-principles/fundamentals/slayer-role-fundamentals.md": {
+      "cluster_fingerprint": "ad6cf360dadee6f77701f541f83bb0bd356771e8f6352df8ed1f7d5af00168ec"
+    },
+    "wiki/01-principles/fundamentals/solidifying-principles.md": {
+      "cluster_fingerprint": "83bdf58bbe58b35ca3d8191ce669e9e6c420e5ac83458d1620ddd32e7741eeb6"
+    },
+    "wiki/01-principles/peeking-and-clearing.md": {
+      "cluster_fingerprint": "d673cdcb80e325bbf0c0cd8409df259d91bb91b7e441aee84d532b37890715bb"
+    },
+    "wiki/01-principles/peeking-and-clearing/cutting-the-pie.md": {
+      "cluster_fingerprint": "e273bf65d77fdb7c8fe691cd27d473d56528fa582c52843de72a07658d4b88e1"
+    },
+    "wiki/02-rule-stage/area/amabi/right-high-ground-control.md": {
+      "cluster_fingerprint": "41d02843e7d317c0c0c307d1e5f03d6890493338f8562fe8538af61e3136fb50"
+    },
+    "wiki/02-rule-stage/area/baigai/left-side-approach-visibility.md": {
+      "cluster_fingerprint": "52ab80be63d8564cdf4b7c802caf6ef4047ab25652263a8afdf5bf98ce6720fe"
+    },
+    "wiki/02-rule-stage/area/kinme/left-side-control.md": {
+      "cluster_fingerprint": "efcad9cea9773d63929419f7cb2f8d93f224ecf64e46549a3a70f69aeeb20796"
+    },
+    "wiki/02-rule-stage/area/kinme/right-side-approach.md": {
+      "cluster_fingerprint": "cd10bc51c5f2138ac71efd47ed7fad14743e289ede852e1cee6b5494cdb9560a"
+    },
+    "wiki/03-weapon-role/shooter/kelvin-525/spacing-and-range-management.md": {
+      "cluster_fingerprint": "c28fe308bb49bc297d03adbaaa19c1b010159c46422222450d5f195951b9bc39"
+    }
+  },
   "consolidate": {
     "01-principles": {
       "path_frequency_hash": "3bad3a65d73ade4cc6fd8f20b597ef91a7794a384a15b4ed7c807a72aea11d90",
